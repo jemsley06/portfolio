@@ -225,8 +225,8 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
 - `<CrtFrame>{children}</CrtFrame>` — sets `data-fx="on|off"` on `<html>`.
 - SVG filter ids: `#phosphor-bloom`, `#chroma-shift`, `#crt-grain`. CSS classes: `.crt-bloom` (`filter:url(#phosphor-bloom)`), `.crt-chroma`.
 
-- [ ] **Step 1:** `FxProvider`: reads `localStorage['fx']` (default `"on"`), `matchMedia('(prefers-reduced-motion: reduce)')` via `useSyncExternalStore`; exposes context. Test: toggling flips `document.documentElement.dataset.fx`.
-- [ ] **Step 2:** `PhosphorFilters.tsx` — a `0×0` absolutely positioned inline SVG:
+- [x] **Step 1:** `FxProvider`: reads `localStorage['fx']` (default `"on"`), `matchMedia('(prefers-reduced-motion: reduce)')` via `useSyncExternalStore`; exposes context. Test: toggling flips `document.documentElement.dataset.fx`.
+- [x] **Step 2:** `PhosphorFilters.tsx` — a `0×0` absolutely positioned inline SVG:
   ```xml
   <filter id="phosphor-bloom" x="-20%" y="-20%" width="140%" height="140%">
     <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
@@ -240,7 +240,7 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
   </filter>
   <filter id="crt-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
   ```
-- [ ] **Step 3:** `crt.css` layers (all `position:fixed; inset:0; pointer-events:none; z-index:50+`):
+- [x] **Step 3:** `crt.css` layers (all `position:fixed; inset:0; pointer-events:none; z-index:50+`):
   - `.crt-scanlines`: `background:repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px)` + `mix-blend-mode:multiply`.
   - `.crt-aperture`: faint vertical RGB triad `repeating-linear-gradient(90deg, rgba(255,0,0,.04) 0 1px, rgba(0,255,0,.04) 1px 2px, rgba(0,0,255,.04) 2px 3px)`.
   - `.crt-vignette`: `background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%)`.
@@ -250,8 +250,17 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
   - `.crt-bezel`: on the frame wrapper — `border-radius:18px; box-shadow: inset 0 0 80px rgba(0,0,0,.8), inset 0 0 4px rgba(247,148,29,.25); margin:8px` plus `outline: 6px solid #0b0806` — mimics the `eva-magi-2` orange-lipped tube frame.
   - Global soft blur: `.crt-content{ filter: blur(.25px) contrast(1.05) saturate(1.15); }` on the content wrapper (not overlays).
   - All animations + blur are disabled under `html[data-fx="off"]` and `@media (prefers-reduced-motion: reduce)`.
-- [ ] **Step 4:** `ScanlineOverlay` renders the layers; `CrtFrame` = bezel → `.crt-content` children → `ScanlineOverlay` → `PhosphorFilters`. Test: with `data-fx="off"`, no element has class `crt-flicker` animating (assert `getComputedStyle` animation-name is `none` or overlay not rendered).
-- [ ] **Step 5:** Wire into `App.tsx`; commit `feat(fx): CRT frame with scanlines, vignette, grain, bloom filters, FX toggle`.
+- [x] **Step 4:** `ScanlineOverlay` renders the layers; `CrtFrame` = bezel → `.crt-content` children → `ScanlineOverlay` → `PhosphorFilters`. Test: with `data-fx="off"`, no element has class `crt-flicker` animating (assert `getComputedStyle` animation-name is `none` or overlay not rendered).
+- [x] **Step 5:** Wire into `App.tsx`; commit `feat(fx): CRT frame with scanlines, vignette, grain, bloom filters, FX toggle`.
+
+**As built (Task 3) — notes for later phases:**
+
+- `.crt-content` carries a CSS `filter`, which makes it a containing block for `position: fixed` descendants. Task 5's mobile bottom tab bar and Task 10's `BootScreen` must render as siblings of `.crt-content` (alongside the overlays), not inside page content.
+- Grain deviates from the literal CSS above to match `_.gif` and the 3 Hz rule: `screen` blend at `opacity .08` (an `overlay` blend cannot lighten over `ink`), re-seeded `1200ms steps(3)` = 2.5 Hz.
+- `.crt-flicker` is a `bone`-tinted `screen` veil animating opacity `.020 ↔ .055` (a 3.5% brightness swing) rather than animating content opacity, which would promote the page to a compositing layer every frame.
+- `useFx()` outside `FxProvider` does not throw; it falls back to `{ fxOn: true, motionOn: !prefersReducedMotion }` so primitives unit-test without the provider.
+- Overlay layers expose `data-crt-layer="scanlines|aperture|grain|rollbar|flicker|vignette"` as the test contract instead of class names.
+- Safari caveats for Task 17 are recorded in comments in `src/styles/crt.css` (keep the filter host rendered, not `display:none`; widen the bloom filter region if halos clip; `@supports` fallback should target `.crt-bloom` / `.crt-chroma` only).
 
 **Acceptance:** Screenshot of stub Home with a large orange heading using `.text-glow-nerv` + `.crt-bloom` visually matches the stroke-plus-halo look of `Evangelion UI - Magi report.jpeg`. Scanlines are visible at 100% zoom on a 1440p monitor. Chrome DevTools Performance shows ≤ 3% CPU idle on an M-series Mac with overlays on.
 
