@@ -281,11 +281,21 @@ Typewriter: { text:string; cps?:number; onDone?():void }    // instant when moti
 Kanji: { jp:string; en:string; tone?:'nerv'|'acid'|'alert' }
 ```
 
-- [ ] **Step 1:** For each primitive: write RTL test (renders, variant classes, `Typewriter` finishes instantly with motion off), implement, verify.
-- [ ] **Step 2:** `MagiPanel` shapes via `clip-path: polygon(...)` with an inner pseudo-border trick (outer clipped `nerv` div, inner clipped `ink-2`/`magi` div inset 5 px) so thick orange borders survive clipping. `denied` = `alert` border + red stamp.
-- [ ] **Step 3:** `SevenSegment`: segment map table `{0:'abcdef',1:'bc',…}`, each segment a rounded `<polygon>`; lit segments `nerv-hot` with `.crt-bloom`, unlit `#2a1a08` at 25% so the "ghost segments" from `eva-timer.gif` show.
-- [ ] **Step 4:** Create `src/pages/DevKitPage.tsx` at route `/kit` (dev-only, excluded from nav; removed in Task 17) rendering every primitive in every variant.
-- [ ] **Step 5:** Commit `feat(ui): MAGI primitives (panel, meta block, boxed label, hazard, seven-segment, typewriter)`.
+- [x] **Step 1:** For each primitive: write RTL test (renders, variant classes, `Typewriter` finishes instantly with motion off), implement, verify.
+- [x] **Step 2:** `MagiPanel` shapes via `clip-path: polygon(...)` with an inner pseudo-border trick (outer clipped `nerv` div, inner clipped `ink-2`/`magi` div inset 5 px) so thick orange borders survive clipping. `denied` = `alert` border + red stamp.
+- [x] **Step 3:** `SevenSegment`: segment map table `{0:'abcdef',1:'bc',…}`, each segment a rounded `<polygon>`; lit segments `nerv-hot` with `.crt-bloom`, unlit `#2a1a08` at 25% so the "ghost segments" from `eva-timer.gif` show.
+- [x] **Step 4:** Create `src/pages/DevKitPage.tsx` at route `/kit` (dev-only, excluded from nav; removed in Task 17) rendering every primitive in every variant.
+- [x] **Step 5:** Commit `feat(ui): MAGI primitives (panel, meta block, boxed label, hazard, seven-segment, typewriter)`.
+
+**As built (Task 4) — notes for later phases:**
+
+- Every primitive takes an additive `className?: string`, and `BoxedLabel` takes explicitly typed element attributes (`href`, `target`, `rel`, `download`, `type`, `disabled`, `onClick`, `aria-current`, `aria-pressed`, …) so Tasks 5, 6 and 14 can use it directly. No planned prop was renamed or dropped. `rel="noopener noreferrer"` is supplied automatically with `target="_blank"`.
+- Assert on `data-testid` (`magi-panel`, `boxed-label`, `seven-segment`, …) plus `data-variant` / `data-tone` / `data-shape` / `data-lit`, never on class names. Tone maps must stay literal strings so Tailwind's scanner sees whole class names.
+- `MagiPanel` renders `title` as a `<p>`, not a heading, so grids of panels don't wreck the document outline; pass your own heading in `children`. It has no intrinsic size — give it one via `className`. Rim thickness is the `--magi-panel-border` custom property (default 5px).
+- `SevenSegment` takes `size` as cell height in px and derives width and gap from it; unsupported characters render an all-ghost cell and `' '` a blank one, so a ticking clock never changes width. `.crt-bloom` is already applied to the lit segments only — do not wrap the widget in it.
+- `Typewriter` calls `onDone` synchronously on mount when motion is off; Task 10's boot machine must not assume a delay.
+- Kanji convention: kanji stays in the a11y tree with `lang="ja"`, English gloss follows, and stamps carry an `sr-only` English meaning (承認 APPROVED / 否定 DENIED / 審議中 DELIBERATING).
+- `/kit` lives in `App.tsx` behind `import.meta.env.DEV` and is deliberately absent from `ROUTES`, so `HudHeader` can map `ROUTES` straight into nav tabs. It is tree-shaken out of production; Task 17 deletes the page, its import and the guarded route.
 
 **Acceptance:** `/kit` screenshot compared with `eva-magi-1.png`, `eva-magi-2.png`, `eva-timer.gif`: panel border thickness, mint fill, digit shape and bloom judged "recognisable at a glance".
 
