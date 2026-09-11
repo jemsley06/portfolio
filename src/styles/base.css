@@ -1,0 +1,177 @@
+/* ---------------------------------------------------------------------------
+ * EVA-UI base layer — reset, document defaults, phosphor glow utilities.
+ * Depends on `tokens.css`, which must be imported first (see `src/main.tsx`).
+ * Element defaults live in `@layer base` so any Tailwind utility beats them;
+ * the opt-in `.text-glow-*` / `.display-compressed` / `.kanji` classes are
+ * unlayered on purpose so they always win over the utility layer.
+ * ------------------------------------------------------------------------- */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--color-steel) var(--color-ink);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-ink);
+    color: var(--color-acid);
+    font-family: var(--font-mono);
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    color: var(--color-nerv);
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  p,
+  ul,
+  ol,
+  figure,
+  blockquote {
+    margin: 0;
+  }
+
+  ul,
+  ol {
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    color: var(--color-nerv);
+    text-decoration: none;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+
+  img,
+  svg,
+  canvas,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-steel);
+  }
+
+  ::selection {
+    background: var(--color-nerv);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-nerv);
+    outline-offset: 2px;
+  }
+
+  /* Global motion guard — see PLAN "Motion rules". Individual components still
+     gate their own animations through `useFx()` (Task 3). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Phosphor glow — the canonical bloom from `Evangelion UI - Magi report.jpeg`:
+ * a 1px crisp stroke that blows out to a lighter core, wrapped in a 6–12px
+ * same-hue halo and a wide, faint outer bloom.
+ *
+ * These classes set `text-shadow` only; pair them with a colour utility
+ * (`text-nerv text-glow-nerv`). Each variant simply re-points two variables:
+ *   --glow-core : the blown-out centre of the stroke
+ *   --glow-hue  : the halo hue
+ * Task 3 (`crt.css`) can dim or flatten the whole system by re-declaring
+ * `text-shadow` (or those two variables) under `html[data-fx='off']`.
+ * ------------------------------------------------------------------------- */
+
+.text-glow-nerv,
+.text-glow-acid,
+.text-glow-alert,
+.text-glow-magi,
+.text-glow-bone {
+  text-shadow:
+    0 0 1px var(--glow-core),
+    0 0 4px color-mix(in srgb, var(--glow-hue) 85%, transparent),
+    0 0 11px color-mix(in srgb, var(--glow-hue) 55%, transparent),
+    0 0 24px color-mix(in srgb, var(--glow-hue) 22%, transparent);
+}
+
+.text-glow-nerv {
+  --glow-core: var(--color-nerv-hot);
+  --glow-hue: var(--color-nerv);
+}
+
+/* Green text blooms toward the lighter MAGI mint in `eva-text-color-ex.png`. */
+.text-glow-acid {
+  --glow-core: var(--color-magi);
+  --glow-hue: var(--color-acid);
+}
+
+.text-glow-alert {
+  --glow-core: var(--color-nerv-hot);
+  --glow-hue: var(--color-alert);
+}
+
+.text-glow-magi {
+  --glow-core: var(--color-magi);
+  --glow-hue: var(--color-magi);
+}
+
+.text-glow-bone {
+  --glow-core: var(--color-bone);
+  --glow-hue: var(--color-bone);
+}
+
+/* Barlow Condensed squeezed further, the way NERV display type is set. */
+.display-compressed {
+  transform: scaleX(0.82);
+  transform-origin: left;
+}
+
+/* Kanji accents (本部 / 操縦者 / 承認 / 否定 …). `palt` tightens the CJK
+   proportional metrics so the glyphs sit like the show's UI stamps. */
+.kanji {
+  font-family: var(--font-jp);
+  font-weight: 700;
+  font-feature-settings: 'palt' 1;
+  letter-spacing: 0.08em;
+}
