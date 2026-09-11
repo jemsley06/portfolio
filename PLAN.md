@@ -29,7 +29,7 @@
   | `nerv` | `#F7941D` | eva-magi-1 orange borders | primary orange: borders, titles, digits |
   | `nerv-hot` | `#FFB042` | eva-timer digits | bloom core of orange |
   | `amber` | `#FFC24D` | eva-timer label | secondary labels |
-  | `magi` | `#79E8A5` | eva-magi-1 mint fills | filled MAGI panels (black text on top) |
+  | `magi` | `#6CF0B1` | eva-magi-1 / eva-magi-2 mint fills (re-sampled Task 2) | filled MAGI panels (black text on top) |
   | `acid` | `#3DF58B` | eva-text-color-ex "SHINJI IKARI" | green body text, map contours |
   | `alert` | `#FF2A1F` | eva-text-color-ex "FIRST.C", `_.gif` stripes | red: warnings, hazard stripes, map splines |
   | `alert-deep` | `#8F0E0E` | eva-magi-2 "審議中" box | red fills |
@@ -190,13 +190,13 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
 
 **Interfaces produced:** Tailwind utilities `bg-ink text-nerv border-magi font-display font-mono font-jp` etc.; CSS vars `--color-*`; utilities `.text-glow-nerv`, `.text-glow-acid`, `.text-glow-alert` (text-shadow stacks); `.display-compressed` (`transform: scaleX(.82)` + `transform-origin:left`).
 
-- [ ] **Step 1:** `tokens.css`:
+- [x] **Step 1:** `tokens.css`:
   ```css
   @import "tailwindcss";
   @theme {
     --color-ink:#050403; --color-ink-2:#120C07;
     --color-nerv:#F7941D; --color-nerv-hot:#FFB042; --color-amber:#FFC24D;
-    --color-magi:#79E8A5; --color-acid:#3DF58B;
+    --color-magi:#6CF0B1; --color-acid:#3DF58B;
     --color-alert:#FF2A1F; --color-alert-deep:#8F0E0E;
     --color-plug-blue:#4B6BFF; --color-plug-magenta:#D94BFF;
     --color-bone:#EADFC4; --color-steel:#5A5148;
@@ -206,13 +206,13 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
     --tracking-telemetry:0.18em;
   }
   ```
-- [ ] **Step 2:** `base.css`: `html{background:var(--color-ink)}`, `body{color:var(--color-acid);font-family:var(--font-mono)}`, `::selection{background:var(--color-nerv);color:var(--color-ink)}`, `:focus-visible{outline:2px solid var(--color-nerv);outline-offset:2px}`, glow utilities:
+- [x] **Step 2:** `base.css`: `html{background:var(--color-ink)}`, `body{color:var(--color-acid);font-family:var(--font-mono)}`, `::selection{background:var(--color-nerv);color:var(--color-ink)}`, `:focus-visible{outline:2px solid var(--color-nerv);outline-offset:2px}`, glow utilities:
   ```css
   .text-glow-nerv{ text-shadow:0 0 2px var(--color-nerv-hot),0 0 8px color-mix(in srgb,var(--color-nerv) 70%,transparent),0 0 20px color-mix(in srgb,var(--color-nerv) 35%,transparent); }
   ```
   (repeat for acid, alert, magi, bone).
-- [ ] **Step 3:** Test: `tokens.test.ts` reads `tokens.css` as text and asserts every token name in the Global Constraints table exists (guards against drift).
-- [ ] **Step 4:** Commit `feat(styles): design tokens, base, glow utilities`.
+- [x] **Step 3:** Test: `tokens.test.ts` reads `tokens.css` as text and asserts every token name in the Global Constraints table exists (guards against drift).
+- [x] **Step 4:** Commit `feat(styles): design tokens, base, glow utilities`.
 
 **Acceptance:** A scratch page rendering the 13 colour swatches + three fonts screenshot-compared side-by-side with `eva-text-color-ex.png` and `eva-magi-1.png`; adjust hex values if the orange reads too yellow or the green too neon (document the final values back in this table).
 
