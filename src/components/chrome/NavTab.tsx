@@ -25,6 +25,11 @@
  * above the main label. It is decorative only (`aria-hidden`) — the link's
  * accessible name stays exactly the route label ("HOME", "PILOT", …), and the
  * `NavLink`'s own text content is what a screen reader announces.
+ *
+ * R5 defect #4 (mobile tab heights): every chip carries `min-h-11` (44px, a
+ * standard touch target) and the label line is `whitespace-nowrap`, so the
+ * four tabs always render at one equal height on a single row — this is what
+ * used to drift when the old kanji sub-label varied in glyph count per route.
  * ------------------------------------------------------------------------- */
 import { NavLink } from 'react-router'
 import type { Route } from '../../routes'
@@ -46,7 +51,7 @@ export function NavTab({ route, index, className }: NavTabProps) {
           as="span"
           tone={isActive ? 'magi' : 'nerv'}
           className={cn(
-            'flex-col justify-center gap-0.5 text-center',
+            'min-h-11 flex-col justify-center gap-0.5 text-center',
             isActive && 'bg-magi! text-ink!',
           )}
         >
@@ -58,7 +63,7 @@ export function NavTab({ route, index, className }: NavTabProps) {
               CH.{String(index).padStart(2, '0')}
             </span>
           )}
-          <span>{route.label}</span>
+          <span className="whitespace-nowrap">{route.label}</span>
         </BoxedLabel>
       )}
     </NavLink>

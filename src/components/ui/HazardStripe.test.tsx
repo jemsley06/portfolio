@@ -33,4 +33,20 @@ describe('HazardStripe', () => {
     expect(label).not.toHaveAttribute('lang')
     expect(label).not.toHaveAttribute('aria-hidden')
   })
+
+  // R5 defect #2: the label used to sit directly on the stripes with no
+  // backing plate, so red text on the red half of the stripe was nearly
+  // unreadable. The label now carries a solid `ink` plate, and the stripe
+  // layer is pinned behind it via a negative z-index rather than depending
+  // on DOM order.
+  it('gives the label a solid ink plate that the stripes cannot paint over', () => {
+    render(<HazardStripe label="DANGER" />)
+
+    const label = screen.getByTestId('hazard-stripe-label')
+    expect(label).toHaveAttribute('data-plate', 'ink')
+    expect(label).toHaveClass('bg-ink')
+
+    const bands = screen.getByTestId('hazard-stripe-bands')
+    expect(bands).toHaveClass('-z-10')
+  })
 })

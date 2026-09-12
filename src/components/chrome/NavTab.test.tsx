@@ -73,4 +73,15 @@ describe('NavTab', () => {
 
     expect(screen.queryByText(/^CH\./)).not.toBeInTheDocument()
   })
+
+  // R5 defect #4: mobile labels used to wrap mid-word (from the old kanji
+  // sub-label) and leave the four tabs at unequal heights. Every chip now
+  // pins an equal minimum height and forbids the label from wrapping.
+  it('pins an equal minimum height and keeps the label on one line', () => {
+    renderAt(PILOT, '/pilot', 2)
+
+    const chip = screen.getByTestId('boxed-label')
+    expect(chip).toHaveClass('min-h-11')
+    expect(within(chip).getByText('PILOT')).toHaveClass('whitespace-nowrap')
+  })
 })

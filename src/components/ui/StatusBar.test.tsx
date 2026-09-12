@@ -25,4 +25,28 @@ describe('StatusBar', () => {
     expect(bar).toHaveAttribute('data-tone', 'alert')
     expect(bar).toHaveClass('border-alert', 'text-alert')
   })
+
+  // R5 defect #3: long text that wrapped to a second line used to overflow
+  // past the bracket frame, because the flex label item's default
+  // `min-width: auto` refused to let it shrink and wrap. `min-w-0` is the
+  // fix; the brackets are pinned `self-stretch` so they always span whatever
+  // height the (possibly two-line) label grows the bar to.
+  it('lets its label shrink and wrap instead of escaping the frame', () => {
+    render(
+      <StatusBar>
+        A VERY LONG STATUS LINE THAT MUST WRAP INSIDE THE BRACKETED FRAME
+      </StatusBar>,
+    )
+
+    const label = screen.getByTestId('status-bar-label')
+    expect(label).toHaveClass('min-w-0', 'flex-1')
+    expect(label).not.toHaveClass('whitespace-nowrap')
+
+    const brackets = screen
+      .getByTestId('status-bar')
+      .querySelectorAll('[data-bracket]')
+    for (const bracket of brackets) {
+      expect(bracket).toHaveClass('self-stretch')
+    }
+  })
 })

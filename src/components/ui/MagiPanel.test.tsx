@@ -29,6 +29,26 @@ describe('MagiPanel', () => {
     expect(screen.getByTestId('magi-panel-interior')).toHaveClass('text-alert')
   })
 
+  // R5 defect #1: `denied` used to wash its whole interior in red (`bg-alert-
+  // deep/25`), which sank the stamp into the fill. The spec is an `alert`
+  // border with a red stamp over the SAME dark interior `outline` uses.
+  it('gives denied the same dark interior as outline, not a solid red fill', () => {
+    const { rerender } = render(<MagiPanel variant="outline" title="X" />)
+    const outlineInterior = screen.getByTestId('magi-panel-interior')
+    expect(outlineInterior).toHaveClass('bg-ink-2')
+
+    rerender(<MagiPanel variant="denied" title="X" />)
+    const deniedPanel = screen.getByTestId('magi-panel')
+    const deniedInterior = screen.getByTestId('magi-panel-interior')
+
+    // The rim (outer layer) still carries the alert border colour…
+    expect(deniedPanel).toHaveClass('bg-alert')
+    // …but the interior matches outline's dark ink-2, not a red fill.
+    expect(deniedInterior).toHaveClass('bg-ink-2')
+    expect(deniedInterior).not.toHaveClass('bg-alert-deep/25')
+    expect(deniedInterior).not.toHaveClass('bg-alert')
+  })
+
   it('clips both layers with the same polygon so the rim survives', () => {
     render(<MagiPanel variant="outline" title="BALTHASAR" shape="pentagon" />)
 

@@ -10,8 +10,14 @@
  *
  * The stripes are decoration: the band is `aria-hidden` unless a `label` is
  * given (R1 — English only, e.g. `DANGER`, not the show's kanji), in which
- * case the label is real text on an ink plate and only the stripes stay
- * hidden.
+ * case the label is real, readable text and only the stripes stay hidden.
+ *
+ * R5 defect #2: `alert`-on-`alert` red text over the red half of the stripes
+ * read at almost no contrast. The stripe layer is pinned to a negative
+ * z-index (`-z-10`), which — per the CSS2 painting order — always paints
+ * *behind* an ordinary, non-positioned sibling regardless of DOM order. That
+ * guarantees the label's own `bg-ink` plate is never occluded by the stripe
+ * pattern, independent of how the two are ordered in markup.
  * ------------------------------------------------------------------------- */
 import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn'
@@ -45,7 +51,7 @@ export function HazardStripe({
       data-height={height}
     >
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 -z-10"
         style={{
           backgroundImage:
             'repeating-linear-gradient(135deg, var(--color-alert) 0 var(--hazard-pitch), var(--color-ink) var(--hazard-pitch) calc(var(--hazard-pitch) * 2))',
@@ -54,7 +60,11 @@ export function HazardStripe({
         aria-hidden="true"
       />
       {label && (
-        <p className="bg-ink text-alert text-glow-alert relative px-3 text-sm leading-none">
+        <p
+          className="bg-ink text-alert text-glow-alert px-3 py-0.5 text-sm leading-none uppercase"
+          data-testid="hazard-stripe-label"
+          data-plate="ink"
+        >
           {label}
         </p>
       )}

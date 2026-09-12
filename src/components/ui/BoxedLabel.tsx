@@ -40,7 +40,7 @@ export type BoxedLabelProps = {
 }
 
 const BASE =
-  'inline-flex items-center gap-1.5 border px-2 py-0.5 font-mono text-xs leading-none tracking-telemetry uppercase'
+  'inline-flex items-center gap-1.5 whitespace-nowrap border px-2 py-0.5 font-mono text-xs leading-none tracking-telemetry uppercase'
 
 const TONE: Record<BoxedLabelTone, string> = {
   nerv: 'border-nerv text-nerv text-glow-nerv',

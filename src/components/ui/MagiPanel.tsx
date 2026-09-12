@@ -12,7 +12,12 @@
  * States, straight off the references:
  *   outline  pending    — orange rim, `ink-2` interior, orange text (magi-2)
  *   filled   resolved   — orange rim, mint interior, `ink` text (magi-1)
- *   denied   rejected   — `alert` rim, washed red interior, red text + stamp
+ *   denied   rejected   — `alert` rim, the SAME dark `ink-2` interior as
+ *                         `outline`, red text + stamp (R5 defect #1: this
+ *                         used to wash the whole interior in red, which sank
+ *                         the stamp into the fill; the fix keeps the panel's
+ *                         normal dark interior and lets only the rim and
+ *                         stamp carry `alert`)
  *
  * The title is a <p>, not a heading: panels are dropped into MagiTriad, the
  * projects grid and the 404 page, and a hard-coded level would break those
@@ -57,9 +62,10 @@ const OUTER_TONE: Record<MagiPanelVariant, string> = {
 const INNER_TONE: Record<MagiPanelVariant, string> = {
   outline: 'bg-ink-2 text-nerv',
   filled: 'bg-magi text-ink',
-  /* `alert-deep` is a decorative fill only, so it is diluted into `ink` and the
-     text above it stays the 4.5:1 `alert` red. */
-  denied: 'bg-alert-deep/25 text-alert',
+  /* R5 defect #1 — same dark `ink-2` interior as `outline`, just red text, so
+     a denied panel reads as "alert rim over a normal panel" rather than a
+     solid red block. */
+  denied: 'bg-ink-2 text-alert',
 }
 
 const STAMP_TONE: Record<MagiPanelStamp, string> = {

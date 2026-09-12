@@ -120,4 +120,20 @@ describe('MobileTabBar', () => {
       links.filter((link) => link.getAttribute('aria-current') === 'page'),
     ).toHaveLength(1)
   })
+
+  // R5 defect #4: the four tabs used to sit at unequal heights because the
+  // old kanji sub-label wrapped mid-word on some routes but not others.
+  it('gives every tab chip the same minimum height so none can drift', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <MobileTabBar />
+      </MemoryRouter>,
+    )
+
+    const chips = screen.getAllByTestId('boxed-label')
+    expect(chips).toHaveLength(ROUTES.length)
+    for (const chip of chips) {
+      expect(chip).toHaveClass('min-h-11')
+    }
+  })
 })
