@@ -84,8 +84,85 @@ const ARM_BACK = (0.56 * HUB) / Math.SQRT2
 const ARM_BAR_X = HUB_LEFT - ARM_BACK
 const ARM_BAR_Y = HUB_TOP + ARM_DROP / 2 - ARM_BACK
 
-const TITLE = 57 /* name size; ≈0.19 × slab height, as in the reference */
-const HUB_TITLE = 44 /* MAGI; ≈0.22 × hub width, as in the reference */
+/* -- type sizing ----------------------------------------------------------
+ * The names must fit the flat inner width of their slab whatever font
+ * resolves. `font-display` is "Barlow Condensed", Impact, "Arial Narrow",
+ * sans-serif; if the webfont is blocked AND neither narrow system face
+ * exists, the generic `sans-serif` is roughly 1.6× wider per character, and a
+ * size tuned for Barlow overflows into the hub. So the size is DERIVED from
+ * the geometry and the actual name lengths against a worst-case advance,
+ * never guessed from one font's metrics.
+ *
+ * Measured advance per uppercase character, in em, including the 0.025em of
+ * `tracking-wide`, for "MELCHIOR·1":
+ *   FreeSans Bold 0.628 · Liberation/Arial Bold 0.645 · DejaVu Sans Bold 0.718
+ * 0.82 clears all of them and also Verdana Bold (~0.795), the widest face
+ * that ever resolves as a default `sans-serif`.                            */
+const WORST_ADVANCE_EM = 0.82
+/** House horizontal compression — the `.display-compressed` value in base.css.
+ *  Buys ~22% more cap height at the same laid-out width, and makes a fallback
+ *  font read narrow like the condensed face the reference uses. */
+const NAME_SCALE = 0.82
+/** Ceiling on the derived size: the reference's own 0.19 × slab height. With
+ *  the three MAGI names it is never the binding constraint — `MELCHIOR·1` in a
+ *  side slab caps the size at ≈0.14 × slab height — but it stops a short name
+ *  like `CASPER·3` ballooning past the reference proportion on its own. */
+const TITLE_MAX = 57
+const HUB_TITLE_MAX = 44 /* MAGI; ≈0.22 × hub width, as in the reference */
+/** Horizontal interior padding, in design units (replaces MagiPanel's 1rem). */
+const PAD_X = 4
+/** Flat inner width a name may occupy, once rim and padding are removed. */
+const SIDE_FLAT = SIDE_W - 2 * RIM - 2 * PAD_X
+const TOP_FLAT = TOP_W - 2 * RIM - 2 * PAD_X
+const HUB_FLAT = HUB - 2 * PAD_X
+
+/** Share of the flat width held back, so that `u()`'s 4-decimal rounding and
+ *  the browser's own sub-pixel rounding can never turn "exactly fits" into
+ *  "one pixel over". */
+const FIT_SAFETY = 0.99
+
+/** Largest font size at which `chars` characters still fit `flat`. */
+function fitSize(flat: number, chars: number): number {
+  return (flat * FIT_SAFETY) / (chars * WORST_ADVANCE_EM * NAME_SCALE)
+}
+
+/** What MagiPanel actually lays out: the name plus its `·N` index suffix. */
+function nameLength(unit: MagiUnit): number {
+  return `${unit.name}·${unit.index}`.length
+}
+
+/** One size shared by all three slabs — the reference sets them equal — small
+ *  enough that the longest name fits the narrowest slab in any font. */
+function titleSize(units: readonly [MagiUnit, MagiUnit, MagiUnit]): number {
+  const [top, left, right] = units
+  return Math.min(
+    TITLE_MAX,
+    fitSize(TOP_FLAT, nameLength(top)),
+    fitSize(SIDE_FLAT, nameLength(left)),
+    fitSize(SIDE_FLAT, nameLength(right)),
+  )
+}
+
+/* Interior sizes, and how far the 45° cut reaches into each interior (the rim
+   shrinks it by b(2−√2), same as the interior clip). The names are padded
+   clear of that cut rather than centred through it, which is both where the
+   reference puts them — about two thirds down a side slab, just above the cut
+   on the top slab — and what frees the FULL flat width for them. */
+const SIDE_INNER_H = SIDE_H - 2 * RIM
+const TOP_INNER_H = TOP_H - 2 * RIM
+const SIDE_INNER_CUT = SIDE_CUT - 0.5857864 * RIM
+const TOP_INNER_CUT = TOP_CUT - 0.5857864 * RIM
+/** Breathing room between a name and the cut it must clear. */
+const CUT_CLEARANCE = 20
+
+/**
+ * Padding on the cut side that keeps a centred title of `size` off the cut.
+ * The title centres in the box left after padding, so its near edge sits at
+ * `(innerH − pad)/2 − size/2` from the far side; that must clear `cut`.
+ */
+function padClearingCut(innerH: number, cut: number, size: number): number {
+  return Math.max(PAD_X, 2 * cut + size - innerH + CUT_CLEARANCE)
+}
 
 /** Design units → a percentage of the container's inline size. */
 function u(n: number): string {
@@ -161,6 +238,7 @@ export function MagiTriad({
 }: MagiTriadProps) {
   const { motionOn } = useFx()
   const [top, left, right] = units
+  const title = titleSize(units)
 
   const slabs = [
     {
@@ -173,6 +251,8 @@ export function MagiTriad({
         height: TOP_H,
         cut: TOP_CUT,
       },
+      /* hold the name above the two bottom cuts */
+      pad: [PAD_X, PAD_X, padClearingCut(TOP_INNER_H, TOP_INNER_CUT, title)],
     },
     {
       unit: left,
@@ -184,6 +264,8 @@ export function MagiTriad({
         height: SIDE_H,
         cut: SIDE_CUT,
       },
+      /* push the name below the top cut */
+      pad: [padClearingCut(SIDE_INNER_H, SIDE_INNER_CUT, title), PAD_X, PAD_X],
     },
     {
       unit: right,
@@ -195,13 +277,15 @@ export function MagiTriad({
         height: SIDE_H,
         cut: SIDE_CUT,
       },
+      pad: [padClearingCut(SIDE_INNER_H, SIDE_INNER_CUT, title), PAD_X, PAD_X],
     },
   ]
 
   const plateStyle: StyleVars = {
     transform: `rotate(${rotate}deg) scale(${fitScale(rotate).toFixed(4)})`,
     '--magi-panel-border': u(RIM),
-    '--magi-panel-title': u(TITLE),
+    '--magi-panel-title': u(title),
+    '--magi-panel-title-scale': String(NAME_SCALE),
   }
 
   return (
@@ -217,13 +301,14 @@ export function MagiTriad({
       data-motion={motionOn ? 'on' : 'off'}
     >
       <div className="absolute inset-0" style={plateStyle}>
-        {slabs.map(({ unit, chamfer, box }) => {
+        {slabs.map(({ unit, chamfer, box, pad }) => {
           const slotStyle: StyleVars = {
             left: u(box.left),
             top: u(box.top),
             width: u(box.width),
             height: u(box.height),
             '--magi-chamfer': u(box.cut),
+            '--magi-panel-pad': pad.map(u).join(' '),
           }
           return (
             <div
@@ -278,7 +363,10 @@ export function MagiTriad({
             top: u(HUB_TOP),
             width: u(HUB),
             height: u(HUB_BAR_Y - HUB_TOP),
-            fontSize: u(HUB_TITLE),
+            fontSize: u(
+              Math.min(HUB_TITLE_MAX, fitSize(HUB_FLAT, hubLabel.length)),
+            ),
+            transform: `scaleX(${NAME_SCALE})`,
           }}
         >
           {hubLabel}

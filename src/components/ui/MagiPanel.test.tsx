@@ -162,4 +162,22 @@ describe('MagiPanel', () => {
     const title = screen.getByText(/MELCHIOR/)
     expect(title.style.fontSize).toBe('var(--magi-panel-title, 1.5rem)')
   })
+
+  // A panel sized in container units must be able to scale its padding and
+  // compress its title too; a hard-coded `p-4` eats a different share of the
+  // slab at every width, and a title tuned for one font overflows in another.
+  it('themes padding and title compression, defaulting to the old look', () => {
+    render(<MagiPanel variant="filled" title="CASPER" index={3} />)
+
+    const interior = screen.getByTestId('magi-panel-interior')
+    // `1rem` is exactly the `p-4` this replaced, so existing panels are unchanged.
+    expect(interior.style.padding).toBe('var(--magi-panel-pad, 1rem)')
+    expect(interior).not.toHaveClass('p-4')
+
+    const title = screen.getByText(/CASPER/)
+    expect(title.style.transform).toBe(
+      'scaleX(var(--magi-panel-title-scale, 1))',
+    )
+    expect(title.style.transformOrigin).toBe('center')
+  })
 })

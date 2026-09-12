@@ -21,6 +21,14 @@
  *                         normal dark interior and lets only the rim and
  *                         stamp carry `alert`)
  *
+ * Themable lengths, all defaulting to what the panel already looked like:
+ * `--magi-panel-border` (rim, 5px), `--magi-chamfer` (corner cut, 1.75rem),
+ * `--magi-panel-pad` (interior padding SHORTHAND, 1rem) and
+ * `--magi-panel-title` / `--magi-panel-title-scale` (title size and its
+ * horizontal compression). A panel sized in container units
+ * must be able to scale ALL of them; a hard-coded `p-4` inside a `cqw` layout
+ * eats a different share of the slab at every width.
+ *
  * The title is a <p>, not a heading: panels are dropped into MagiTriad, the
  * projects grid and the 404 page, and a hard-coded level would break those
  * documents' outlines. Pages that need a heading pass one in `children`.
@@ -160,15 +168,28 @@ export function MagiPanel({
     >
       <div
         className={cn(
-          'flex h-full w-full flex-col items-center justify-center gap-3 p-4 text-center',
+          'flex h-full w-full flex-col items-center justify-center gap-3 text-center',
           INNER_TONE[variant],
         )}
-        style={{ clipPath: interiorClipPath }}
+        style={{
+          clipPath: interiorClipPath,
+          /* A `padding` SHORTHAND, so a caller can keep content clear of a
+             chamfered corner asymmetrically. Default `1rem` == the `p-4` this
+             replaces, so every existing panel is unchanged. */
+          padding: 'var(--magi-panel-pad, 1rem)',
+        }}
         data-testid="magi-panel-interior"
       >
         <p
           className="font-display leading-none tracking-wide uppercase"
-          style={{ fontSize: 'var(--magi-panel-title, 1.5rem)' }}
+          style={{
+            fontSize: 'var(--magi-panel-title, 1.5rem)',
+            /* Horizontal compression, so a title sized for a condensed face
+               still fits when a wide fallback font resolves instead. Scaling
+               the block about its centre keeps centred text centred. */
+            transform: 'scaleX(var(--magi-panel-title-scale, 1))',
+            transformOrigin: 'center',
+          }}
         >
           {title}
           {index !== undefined && <span aria-hidden="true">·{index}</span>}
