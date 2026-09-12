@@ -309,10 +309,18 @@ Kanji: { jp:string; en:string; tone?:'nerv'|'acid'|'alert' }
 
 **Consumes:** `ROUTES` (Task 1), `BoxedLabel`, `Kanji`, `useFx`. **Produces:** `formatTelemetryTime(d:Date):string` → `"T+HH:MM:SS.mmm"`-style `+0:38:50909` look (hours:minutes:seconds+ms, no leading zero on hours).
 
-- [ ] **Step 1:** Layout (desktop): left = `J. EMSLEY` in `font-display` `display-compressed` nerv glow, under it `UNIT-01 // PILOT TERMINAL` mono bone; centre = four `NavTab`s (`BoxedLabel` with `Kanji` sub-label; active tab = filled `magi` bg + ink text like a resolved MAGI panel, inactive = orange outline); right = live clock (`StatusBar`, 100 ms tick, mono) and FX toggle button `FX ON/OFF`.
-- [ ] **Step 2:** Mobile (< 768 px): tabs become a 4-column bottom bar (`position:fixed; bottom:0`); header collapses to callsign + clock.
-- [ ] **Step 3:** Tests: active tab has `aria-current="page"`; clock renders `T+` prefix; `SkipLink` targets `#main`.
-- [ ] **Step 4:** Commit `feat(chrome): HUD header with nav tabs, telemetry clock, FX toggle`.
+- [x] **Step 1:** Layout (desktop): left = `J. EMSLEY` in `font-display` `display-compressed` nerv glow, under it `UNIT-01 // PILOT TERMINAL` mono bone; centre = four `NavTab`s (`BoxedLabel` with `Kanji` sub-label; active tab = filled `magi` bg + ink text like a resolved MAGI panel, inactive = orange outline); right = live clock (`StatusBar`, 100 ms tick, mono) and FX toggle button `FX ON/OFF`.
+- [x] **Step 2:** Mobile (< 768 px): tabs become a 4-column bottom bar (`position:fixed; bottom:0`); header collapses to callsign + clock.
+- [x] **Step 3:** Tests: active tab has `aria-current="page"`; clock renders `T+` prefix; `SkipLink` targets `#main`.
+- [x] **Step 4:** Commit `feat(chrome): HUD header with nav tabs, telemetry clock, FX toggle`.
+
+**As built (Task 5) — notes for later phases:**
+
+- `CrtFrame` gained a `floatingChrome?: ReactNode` slot, rendered as a sibling of `.crt-content` inside `.crt-bezel`, which has no filter and so lets `position: fixed` anchor to the viewport. The mobile tab bar goes through it; Task 10's `BootScreen` should use the same slot.
+- `formatTelemetryTime(d: Date): string` returns `T+H:MM:SSmmm` — hours unpadded, minutes and seconds zero-padded to 2, milliseconds to 3, seconds and milliseconds concatenated with no separator (`T+0:38:50909`). Pure; the caller supplies the `Date`.
+- The clock digits are `aria-hidden` with a static `sr-only` label, so the 10 Hz tick is never announced.
+- Pages from Task 11 onward MUST provide `<main id="main">`; the skip link already targets it and currently has nothing to jump to.
+- Open polish question for review: the active (mint-filled) nav tab keeps a `nerv`-orange kanji sub-label, because `Kanji` only accepts `nerv|acid|alert`. Extending that union is the fix if it reads wrong on screen.
 
 ### Task 6: `HudFooter` + content types + links — *Sonnet*
 

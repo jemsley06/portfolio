@@ -5,6 +5,7 @@ import { FxProvider } from './fx/FxProvider'
 import { CrtFrame } from './fx/CrtFrame'
 import { SkipLink } from './components/chrome/SkipLink'
 import { HudHeader, MobileTabBar } from './components/chrome/HudHeader'
+import { HudFooter } from './components/chrome/HudFooter'
 /* DEV ONLY — the `/kit` primitive gallery. Kept out of `ROUTES` so it never
    reaches the nav, and dropped from production builds by the `DEV` guard
    below. Task 17 deletes this import, the route and the page. */
@@ -29,6 +30,7 @@ export default function App() {
           )}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <HudFooter />
       </CrtFrame>
     </FxProvider>
   )
