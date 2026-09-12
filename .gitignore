@@ -3,6 +3,10 @@ node_modules/
 dist/
 dist-ssr/
 .superpowers/
+
+# Downloaded elevation tiles for scripts/bake-terrain.mjs (never committed;
+# the baked output in public/terrain is what ships).
+scripts/.cache/
 *.local
 
 # Logs
