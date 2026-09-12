@@ -335,11 +335,18 @@ export type ResumeEntry = { org:string; role:string; start:string /* YYYY-MM */;
 export type Resume = { experience:ResumeEntry[]; education:ResumeEntry[]; skills:Skill[]; certifications?:string[]; pdf:string };
 export type Profile = { name:string; callsign:string; unit:string; title:string; oneLiner:string; bio:string[]; photo?:string; skills:Skill[]; location:string; status:'AVAILABLE'|'ENGAGED' };
 ```
-- [ ] **Step 1:** `links.ts` with `mailto:jtey20@gmail.com`, `https://github.com/jemsley06`, `https://www.linkedin.com/in/jason-emsley` (mark in a comment: **OWNER TO CONFIRM**).
-- [ ] **Step 2:** Footer: `HazardStripe` top, `MetaBlock` rows `[['CODE','01'],['FILE','PORTFOLIO_SYS'],['EXTENTION','2026'],['EX_MODE','ON'],['PRIORITY','AAA']]`, three `BoxedLabel as="a"` links, right-aligned `NERV`-style wordmark in `magi` with `HatchBar`.
-- [ ] **Step 3:** Test: three links with correct hrefs and `rel="noopener"`. Commit `feat(chrome): footer with contact links and MAGI metadata`.
+- [x] **Step 1:** `links.ts` with `mailto:jtey20@gmail.com`, `https://github.com/jemsley06`, `https://www.linkedin.com/in/jason-emsley` (mark in a comment: **OWNER TO CONFIRM**).
+- [x] **Step 2:** Footer: `HazardStripe` top, `MetaBlock` rows `[['CODE','01'],['FILE','PORTFOLIO_SYS'],['EXTENTION','2026'],['EX_MODE','ON'],['PRIORITY','AAA']]`, three `BoxedLabel as="a"` links, right-aligned `NERV`-style wordmark in `magi` with `HatchBar`.
+- [x] **Step 3:** Test: three links with correct hrefs and `rel="noopener"`. Commit `feat(chrome): footer with contact links and MAGI metadata`.
 
 ---
+
+**As built (Task 6) — notes for later phases:**
+
+- The content types are verbatim from the Produces block above and carry no React import, so pages may import them freely.
+- `links.ts` exports `LINKS: Link[]`. The GitHub and LinkedIn URLs are marked `// OWNER TO CONFIRM`.
+- `mailto:` opens in place; the two external links use `target="_blank"`, and `BoxedLabel` supplies `rel="noopener noreferrer"` for them automatically — assert that behaviour rather than setting `rel` at the call site.
+- The footer reserves `pb-20 md:pb-6` so its last row clears the fixed mobile tab bar, which renders outside `.crt-content` and can otherwise occlude it.
 
 ## Phase 3 — Generated Graphics (Opus)
 
