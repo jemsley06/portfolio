@@ -10,7 +10,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc -p tsconfig.app.json --noEmit"
+    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "bake:terrain": "node scripts/bake-terrain.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
