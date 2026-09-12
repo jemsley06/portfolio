@@ -23,3 +23,6 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary git worktrees created for subagents (never project content)
+.claude/worktrees/
