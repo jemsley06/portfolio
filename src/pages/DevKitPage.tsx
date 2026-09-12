@@ -10,6 +10,7 @@
  * `eva-magi-2.png` and `eva-timer.gif` — every primitive, every variant.
  * ------------------------------------------------------------------------- */
 import type { ReactNode } from 'react'
+import { MagiTriad } from '../components/graphics/MagiTriad'
 import { BoxedLabel } from '../components/ui/BoxedLabel'
 import { HatchBar } from '../components/ui/HatchBar'
 import { HazardStripe } from '../components/ui/HazardStripe'
@@ -80,6 +81,34 @@ export default function DevKitPage() {
           >
             <span className="font-display text-5xl leading-none">01</span>
           </MagiPanel>
+        </div>
+      </Section>
+
+      <Section title="MAGI TRIAD — CHAMFERED SLABS AROUND A HEXAGONAL HUB">
+        <p className="font-mono text-xs tracking-telemetry text-bone">
+          COMPARE WITH references/eva-magi-1.png — CHAMFER ANGLE, HUB SIZE,
+          GUTTER WIDTH, CONNECTOR BAR THICKNESS
+        </p>
+        <div className="flex flex-col gap-10 xl:flex-row">
+          <MagiTriad className="max-w-2xl" />
+          <MagiTriad
+            className="max-w-2xl"
+            rotate={0}
+            units={[
+              { name: 'BALTHASAR', index: 2, state: 'approved' },
+              { name: 'CASPER', index: 3, state: 'approved' },
+              { name: 'MELCHIOR', index: 1, state: 'denied' },
+            ]}
+          />
+        </div>
+        <div className="max-w-xs">
+          {/* A single chamfered slab, the shape reused as a project card. */}
+          <MagiPanel
+            variant="filled"
+            title="OP-013"
+            chamfer="top-right"
+            className="h-40 w-full"
+          />
         </div>
       </Section>
 

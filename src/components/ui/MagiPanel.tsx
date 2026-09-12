@@ -7,7 +7,9 @@
  * solid slab of border colour, the inner one is inset by `--magi-panel-border`
  * (5px, ≈2% of a 250px panel — the thickness measured off `eva-magi-1.png`)
  * and re-clipped, so the orange rim survives the cut on every edge including
- * the diagonals.
+ * the diagonals. R2 adds `chamfer`, a 45° corner cut sized by `--magi-chamfer`;
+ * the interior's cut is shrunk by `b(2−√2)` so the rim stays the same width on
+ * the diagonal as on the straight edges (see CHAMFER_INNER).
  *
  * States, straight off the references:
  *   outline  pending    — orange rim, `ink-2` interior, orange text (magi-2)
@@ -28,6 +30,9 @@ import { cn } from '../../lib/cn'
 
 export type MagiPanelVariant = 'outline' | 'filled' | 'denied'
 export type MagiPanelShape = 'square' | 'pentagon' | 'trapezoid'
+/** Corners a `chamfer` may cut. R2 — the 45° cuts of `eva-magi-1.png`. */
+export type MagiPanelCorner =
+  'top-left' | 'top-right' | 'bottom-right' | 'bottom-left'
 /** R1 — English stamp glyphs (no kanji): approved · denied · deliberating. */
 export type MagiPanelStamp = 'APPROVED' | 'DENIED' | 'PENDING'
 
@@ -38,6 +43,15 @@ export type MagiPanelProps = {
   index?: 1 | 2 | 3
   stamp?: MagiPanelStamp
   shape?: MagiPanelShape
+  /**
+   * R2 — cut one or more corners at a true 45°, the slab shape the three
+   * `eva-magi-1.png` panels use where they face the MAGI hub. Overrides
+   * `shape`. The cut length is `--magi-chamfer` (a LENGTH, never a
+   * percentage: equal px on both axes is what makes the cut 45° whatever the
+   * panel's aspect ratio), so one slab works inside `MagiTriad` and alone as
+   * a project card.
+   */
+  chamfer?: MagiPanelCorner | readonly MagiPanelCorner[]
   /** Degrees of tilt — `eva-magi-2.png` scatters its panels between ±20°. */
   rotate?: number
   children?: ReactNode
@@ -51,6 +65,31 @@ const SHAPE_CLIP: Record<MagiPanelShape, string> = {
   square: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
   pentagon: 'polygon(0% 0%, 100% 0%, 100% 64%, 50% 100%, 0% 64%)',
   trapezoid: 'polygon(6% 0%, 94% 0%, 100% 100%, 0% 100%)',
+}
+
+/* The cut length, and the same cut shrunk to keep the rim an even thickness.
+   A 45° edge inset by `b` on both axes moves `b·√2` along its own normal, so
+   an interior inset by `b` and clipped with the SAME `k` would leave a rim of
+   `b·√2` on the diagonal and `b` everywhere else. `k − b(2−√2)` cancels it. */
+const CHAMFER = 'var(--magi-chamfer, 1.75rem)'
+const CHAMFER_INNER =
+  'max(0px, calc(var(--magi-chamfer, 1.75rem) - 0.5857864 * var(--magi-panel-border, 5px)))'
+
+function chamferClip(corners: readonly MagiPanelCorner[], k: string): string {
+  const rest = `calc(100% - ${k})`
+  const points = [
+    ...(corners.includes('top-left') ? [`0% ${k}`, `${k} 0%`] : ['0% 0%']),
+    ...(corners.includes('top-right')
+      ? [`${rest} 0%`, `100% ${k}`]
+      : ['100% 0%']),
+    ...(corners.includes('bottom-right')
+      ? [`100% ${rest}`, `${rest} 100%`]
+      : ['100% 100%']),
+    ...(corners.includes('bottom-left')
+      ? [`${k} 100%`, `0% ${rest}`]
+      : ['0% 100%']),
+  ]
+  return `polygon(${points.join(', ')})`
 }
 
 const OUTER_TONE: Record<MagiPanelVariant, string> = {
@@ -80,11 +119,23 @@ export function MagiPanel({
   index,
   stamp,
   shape = 'square',
+  chamfer,
   rotate,
   children,
   className,
 }: MagiPanelProps) {
-  const clipPath = SHAPE_CLIP[shape]
+  const corners: readonly MagiPanelCorner[] =
+    chamfer === undefined
+      ? []
+      : typeof chamfer === 'string'
+        ? [chamfer]
+        : chamfer
+  const clipPath = corners.length
+    ? chamferClip(corners, CHAMFER)
+    : SHAPE_CLIP[shape]
+  const interiorClipPath = corners.length
+    ? chamferClip(corners, CHAMFER_INNER)
+    : clipPath
   const outerStyle: CSSProperties = {
     clipPath,
     padding: 'var(--magi-panel-border, 5px)',
@@ -104,6 +155,7 @@ export function MagiPanel({
       data-testid="magi-panel"
       data-variant={variant}
       data-shape={shape}
+      data-chamfer={corners.length ? corners.join(' ') : undefined}
       data-index={index}
     >
       <div
@@ -111,10 +163,13 @@ export function MagiPanel({
           'flex h-full w-full flex-col items-center justify-center gap-3 p-4 text-center',
           INNER_TONE[variant],
         )}
-        style={{ clipPath }}
+        style={{ clipPath: interiorClipPath }}
         data-testid="magi-panel-interior"
       >
-        <p className="font-display text-2xl leading-none tracking-wide uppercase">
+        <p
+          className="font-display leading-none tracking-wide uppercase"
+          style={{ fontSize: 'var(--magi-panel-title, 1.5rem)' }}
+        >
           {title}
           {index !== undefined && <span aria-hidden="true">·{index}</span>}
           {index !== undefined && <span className="sr-only"> {index}</span>}

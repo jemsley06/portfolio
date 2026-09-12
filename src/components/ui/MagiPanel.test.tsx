@@ -99,4 +99,67 @@ describe('MagiPanel', () => {
 
     expect(screen.getByText('PATTERN BLUE')).toBeInTheDocument()
   })
+
+  // R2 — the 45 degree corner cut MagiTriad composes its three slabs from.
+  it('cuts the named corners at 45 degrees, keeping the rim even', () => {
+    const { rerender } = render(
+      <MagiPanel variant="filled" title="CASPER" chamfer="top-right" />,
+    )
+
+    const panel = screen.getByTestId('magi-panel')
+    const inner = screen.getByTestId('magi-panel-interior')
+    expect(panel).toHaveAttribute('data-chamfer', 'top-right')
+    // The cut is a LENGTH, not a percentage: equal px on both axes is what
+    // keeps it at 45 degrees whatever the panel's aspect ratio.
+    expect(panel.style.clipPath).toContain('var(--magi-chamfer, 1.75rem)')
+    expect(panel.style.clipPath).toContain(
+      'calc(100% - var(--magi-chamfer, 1.75rem)) 0%',
+    )
+    // The interior's cut is shrunk by b(2 - sqrt2) so the rim is the same
+    // thickness on the diagonal as on the straight edges.
+    expect(inner.style.clipPath).toContain('0.5857864')
+    expect(inner.style.clipPath).not.toBe(panel.style.clipPath)
+
+    rerender(
+      <MagiPanel
+        variant="filled"
+        title="BALTHASAR"
+        chamfer={['bottom-left', 'bottom-right']}
+      />,
+    )
+    expect(screen.getByTestId('magi-panel')).toHaveAttribute(
+      'data-chamfer',
+      'bottom-left bottom-right',
+    )
+  })
+
+  it('leaves the legacy shapes alone unless a chamfer is asked for', () => {
+    const { rerender } = render(
+      <MagiPanel variant="outline" title="X" shape="trapezoid" />,
+    )
+    const panel = () => screen.getByTestId('magi-panel')
+    expect(panel()).not.toHaveAttribute('data-chamfer')
+    expect(panel().style.clipPath).toBe(
+      'polygon(6% 0%, 94% 0%, 100% 100%, 0% 100%)',
+    )
+
+    // A chamfer overrides `shape`; `data-shape` still reports what was passed.
+    rerender(
+      <MagiPanel
+        variant="outline"
+        title="X"
+        shape="trapezoid"
+        chamfer="bottom-left"
+      />,
+    )
+    expect(panel()).toHaveAttribute('data-shape', 'trapezoid')
+    expect(panel().style.clipPath).toContain('var(--magi-chamfer')
+  })
+
+  it('drives the title size from --magi-panel-title so slabs can scale it', () => {
+    render(<MagiPanel variant="filled" title="MELCHIOR" index={1} />)
+
+    const title = screen.getByText(/MELCHIOR/)
+    expect(title.style.fontSize).toBe('var(--magi-panel-title, 1.5rem)')
+  })
 })

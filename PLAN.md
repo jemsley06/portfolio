@@ -270,7 +270,7 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
 
 **Interfaces produced (exact props):** **REVISED by R1 and R2 — `Kanji` is deleted, `MagiPanel.stamp` becomes English, and `MagiPanel` gains a chamfered shape.**
 ```ts
-MagiPanel: { variant:'outline'|'filled'|'denied'; title:string; index?:1|2|3; stamp?:'承認'|'否定'|'審議中'; shape?:'square'|'pentagon'|'trapezoid'; rotate?:number; children?:ReactNode }
+MagiPanel: { variant:'outline'|'filled'|'denied'; title:string; index?:1|2|3; stamp?:'APPROVED'|'DENIED'|'PENDING'; shape?:'square'|'pentagon'|'trapezoid'; chamfer?:Corner|readonly Corner[] /* 'top-left'|'top-right'|'bottom-right'|'bottom-left', cut at 45°, sized by --magi-chamfer; overrides shape */; rotate?:number; children?:ReactNode }
 MetaBlock: { rows: Array<[label:string, value:string]> }   // renders "CODE : 239" style, mono, nerv
 BoxedLabel: { children:ReactNode; tone?:'nerv'|'acid'|'alert'|'magi'; as?:'span'|'a'|'button' }
 HazardStripe: { height?:number; label?:string }              // red/black 45° stripes, optional centred kanji
@@ -374,9 +374,9 @@ The kanji reads as costume rather than design. Strip it everywhere; the layouts 
 - **Three short, thick orange connector bars** bridge the gap from each slab's chamfered edge to the hub.
 - Panel names are large, black, letter-spaced, and sit inside the slab: `BALTHASAR·2` upper right, `CASPER·3` left, `MELCHIOR·1` lower right. The whole plate is rotated a few degrees.
 
-- [ ] Rewrite the Task 9 `MagiTriad` spec around that description: three chamfered slabs around a hexagonal hub, not "pentagon pointing down" in a 12-column grid.
-- [ ] Give `MagiPanel` the chamfer as a real shape (`clip-path` with the corner cut facing a `corner` prop), so a slab can be composed into the triad and still used alone as a project card.
-- [ ] Hold the triad's proportions from the reference: the slabs dominate, the hub is small, the black gutters between slabs are narrow and even.
+- [x] Rewrite the Task 9 `MagiTriad` spec around that description: three chamfered slabs around a hexagonal hub, not "pentagon pointing down" in a 12-column grid.
+- [x] Give `MagiPanel` the chamfer as a real shape (`clip-path` with the corner cut facing a `corner` prop), so a slab can be composed into the triad and still used alone as a project card.
+- [x] Hold the triad's proportions from the reference: the slabs dominate, the hub is small, the black gutters between slabs are narrow and even. **As built:** the two diagonal arms are narrow and equal (0.32 × hub). The third gutter cannot join them — it *is* the hub channel, because the hub's side walls are the lower slabs' inner edges and those are parallel. `eva-magi-1.png` measures 117 px of trunk against 38 px of arm, so this follows the reference rather than the word "even".
 
 ### R3: Topographic maps are profile lines, not iso-contours — *Opus*
 
@@ -452,7 +452,13 @@ Algorithm (matches `pilot-sync-1/2.gif`):
 **Files:** `src/components/graphics/WireGlobe.tsx`, `MagiTriad.tsx` (+ tests).
 
 - `WireGlobe`: 12 meridians + 7 parallels projected orthographically, rotates around a tilted axis (`motionOn` → 30 s/rev via `requestAnimationFrame` updating a `rotation` state at 15 fps max), stroke `nerv`, `.crt-bloom`. Props `{ size?:number; tone?:'nerv'|'alert' }`.
-- `MagiTriad`: **REVISED by R2 — read `eva-magi-1.png` again and build chamfered slabs around a hexagonal hub.** The three-panel composition from `eva-magi-1.png`: BALTHASAR·2 top (pentagon pointing down), CASPER·3 bottom-left, MELCHIOR·1 bottom-right, connecting "MAGI" hub with three orange link bars; each panel accepts `{ name, index, state:'pending'|'approved'|'denied' }` so pages can animate deliberation (Home shows all three flipping to 承認 in sequence). Built from `MagiPanel`s positioned in a CSS grid, not raw SVG, so text stays DOM.
+- `MagiTriad`: **REVISED by R2 — the geometry below is measured off `eva-magi-1.png`, not the old "pentagon pointing down in a grid" description.** Three large mint slabs, each a `MagiPanel` rectangle with its hub-facing corner(s) cut at a true 45°, arranged around a small black hexagonal hub carrying `MAGI` in orange (the plate's only orange-on-black text):
+  - BALTHASAR·2 spans the top with **both** bottom corners chamfered, so its short flat bottom edge *is* the hub's ceiling; CASPER·3 sits bottom-left with its top-right corner chamfered; MELCHIOR·1 sits bottom-right with its top-left corner chamfered.
+  - The black between them is a ⅄: a trunk running straight down from the junction plus two narrow arms running up-left and up-right at 45°. The trunk's width and the hub's width are the same number and cannot be decoupled — the hub's side walls *are* the two lower slabs' inner edges, which stay parallel — so the three gutters are not equal, and the reference does not make them equal either (117 px of trunk against 38 px of arm). Hold the arms narrow and equal.
+  - Three short, thick orange connector bars bridge the slabs across each channel at the hub's three open corners; that is what closes the hexagon visually. They are decorative (`aria-hidden`).
+  - Proportions held from the reference: hub height 0.71 × hub width, arm 0.32 × hub, bar thickness 0.09 × hub, arm bars set back 0.56 × hub from the hub, slab name cap height 0.19 × slab height, `MAGI` cap height 0.22 × hub width, slab rim 0.03 × hub width. The whole plate is tilted a few degrees.
+  - Each panel accepts `{ name, index, state:'pending'|'approved'|'denied' }` (→ `outline` / `filled` / `denied`) so pages can animate deliberation (Home flips all three to approved in sequence). State is also carried as `sr-only` text, since the colour flip alone does not reach a screen reader.
+  - Built from `MagiPanel`s positioned with CSS, never raw SVG, so the names stay DOM text. Lengths are `cqw` against the component's own container, because a 45° chamfer needs an equal *length* on both axes — a percentage would shear with the aspect ratio.
 - [ ] Tests; `/kit`; commit `feat(graphics): WireGlobe and MagiTriad`.
 
 ---
