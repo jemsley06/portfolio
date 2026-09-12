@@ -24,7 +24,6 @@ export type Project = {
   id: string
   code: string // e.g. "OP-013"
   title: string
-  kanji?: string
   summary: string
   stack: string[]
   status: 'ACTIVE' | 'COMPLETE' | 'ARCHIVED'

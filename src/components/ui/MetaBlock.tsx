@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------------
  * MetaBlock — the CODE / FILE / EXTENTION / EX_MODE / PRIORITY stack that sits
- * under the 提訴 header in `eva-magi-1.png` and `eva-magi-2.png`.
+ * under the header in `eva-magi-1.png` and `eva-magi-2.png`.
  *
  * Mono, orange, tracked out, and — in every reference — the first row is set
  * two sizes larger than the rest ("CODE : 239"), which is what makes the block

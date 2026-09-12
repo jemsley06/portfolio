@@ -1,7 +1,5 @@
 /* ---------------------------------------------------------------------------
- * NavTab — one `ROUTES` entry rendered as a boxed MAGI-style nav chip:
- * `BoxedLabel` for the box, `Kanji` inside it as the jp-glyph / EN-gloss
- * pair PLAN Task 5 calls its "sub-label".
+ * NavTab — one `ROUTES` entry rendered as a boxed MAGI-style nav chip.
  *
  * `react-router`'s `NavLink` already stamps `aria-current="page"` on the
  * underlying `<a>` when the route matches (its documented default — see
@@ -19,31 +17,48 @@
  * rule order rather than JSX class order. `!` makes the override
  * unconditional.
  *
- * `Kanji` only knows `nerv | acid | alert` tones (no `ink` or `magi`), so the
- * kanji sub-label keeps its `nerv` colouring even on the filled/active chip —
- * a deliberate simplification rather than forking or extending Task 4's
- * primitive for this one caller (see the Task 5 report for the tradeoff).
+ * English-only treatment (R1). The kanji sub-label that used to fill out the
+ * chip is gone; in its place is a small decorative "CH.0N" channel eyebrow —
+ * a plain zero-padded position number (1-based `index` prop, supplied by the
+ * caller from its `ROUTES.map` index) styled the way `eva-text-color-ex.png`
+ * sets its `TEST PLUG 01` / `MONITOR` boxed captions: tracked-out mono capitals
+ * above the main label. It is decorative only (`aria-hidden`) — the link's
+ * accessible name stays exactly the route label ("HOME", "PILOT", …), and the
+ * `NavLink`'s own text content is what a screen reader announces.
  * ------------------------------------------------------------------------- */
 import { NavLink } from 'react-router'
 import type { Route } from '../../routes'
+import { cn } from '../../lib/cn'
 import { BoxedLabel } from '../ui/BoxedLabel'
-import { Kanji } from '../ui/Kanji'
 
 export type NavTabProps = {
   route: Route
+  /** 1-based position in `ROUTES`, used only for the decorative "CH.0N" eyebrow. */
+  index?: number
   className?: string
 }
 
-export function NavTab({ route, className }: NavTabProps) {
+export function NavTab({ route, index, className }: NavTabProps) {
   return (
     <NavLink to={route.path} end={route.path === '/'} className={className}>
       {({ isActive }) => (
         <BoxedLabel
           as="span"
           tone={isActive ? 'magi' : 'nerv'}
-          className={isActive ? 'bg-magi! text-ink!' : undefined}
+          className={cn(
+            'flex-col justify-center gap-0.5 text-center',
+            isActive && 'bg-magi! text-ink!',
+          )}
         >
-          <Kanji jp={route.kanji} en={route.label} tone="nerv" />
+          {index !== undefined && (
+            <span
+              aria-hidden="true"
+              className="text-[0.6rem] tracking-telemetry opacity-70"
+            >
+              CH.{String(index).padStart(2, '0')}
+            </span>
+          )}
+          <span>{route.label}</span>
         </BoxedLabel>
       )}
     </NavLink>

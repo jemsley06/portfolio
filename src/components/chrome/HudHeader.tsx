@@ -106,8 +106,8 @@ export function HudHeader() {
         </div>
 
         <nav aria-label="Primary" className="flex items-center gap-3">
-          {ROUTES.map((route) => (
-            <NavTab key={route.path} route={route} />
+          {ROUTES.map((route, i) => (
+            <NavTab key={route.path} route={route} index={i + 1} />
           ))}
         </nav>
 
@@ -140,10 +140,11 @@ export function MobileTabBar() {
       aria-label="Primary"
       className="border-steel/60 bg-ink/95 fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t md:hidden"
     >
-      {ROUTES.map((route) => (
+      {ROUTES.map((route, i) => (
         <NavTab
           key={route.path}
           route={route}
+          index={i + 1}
           className="flex flex-col items-center justify-center py-2"
         />
       ))}

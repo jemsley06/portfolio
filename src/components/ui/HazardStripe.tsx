@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------------
  * HazardStripe — the red-on-black diagonal warning band that runs beside the
- * countdown in `eva-timer.gif` and behind the 危険 badge in `_.gif`.
+ * countdown in `eva-timer.gif` and behind the hazard badge in `_.gif`.
  *
  * Measured off the references: bands of equal width and gap, leaning right
  * ("///") at 45°. In CSS a `repeating-linear-gradient` at 135deg puts the
@@ -9,8 +9,9 @@
  * divider keep the same texture.
  *
  * The stripes are decoration: the band is `aria-hidden` unless a `label` is
- * given, in which case the label is real text on an ink plate (exactly how the
- * references cut the stripes to seat 危険) and only the stripes stay hidden.
+ * given (R1 — English only, e.g. `DANGER`, not the show's kanji), in which
+ * case the label is real text on an ink plate and only the stripes stay
+ * hidden.
  * ------------------------------------------------------------------------- */
 import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn'
@@ -18,7 +19,7 @@ import { cn } from '../../lib/cn'
 export type HazardStripeProps = {
   /** Band height in px (default 16 — the divider weight used on Home). */
   height?: number
-  /** Optional centred text, usually the kanji 危険. */
+  /** Optional centred text, e.g. "DANGER". */
   label?: string
   className?: string
 }
@@ -53,10 +54,7 @@ export function HazardStripe({
         aria-hidden="true"
       />
       {label && (
-        <p
-          className="kanji bg-ink text-alert text-glow-alert relative px-3 text-sm leading-none"
-          lang="ja"
-        >
+        <p className="bg-ink text-alert text-glow-alert relative px-3 text-sm leading-none">
           {label}
         </p>
       )}

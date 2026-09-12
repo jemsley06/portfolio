@@ -39,7 +39,6 @@
   /* --- type ------------------------------------------------------------- */
   --font-display: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
   --font-mono: 'Share Tech Mono', 'JetBrains Mono', ui-monospace, monospace;
-  --font-jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
 
   --tracking-telemetry: 0.18em;
 }

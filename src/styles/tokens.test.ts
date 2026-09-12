@@ -26,7 +26,7 @@ const COLOR_TOKENS = [
   'steel',
 ] as const
 
-const FONT_TOKENS = ['display', 'mono', 'jp'] as const
+const FONT_TOKENS = ['display', 'mono'] as const
 
 function declaration(name: string): RegExpMatchArray | null {
   return tokensCss.match(new RegExp(`--${name}:\\s*([^;]+);`))

@@ -6,7 +6,7 @@
 
 **Architecture:** Vite + React 19 single-page app with React Router. A global `CrtFrame` wraps every route and layers the CRT post-processing (scanlines, vignette, noise, flicker, bloom) purely with CSS and inline SVG filters. Page content is DOM text so it stays selectable and accessible; decorative graphics (sync ribbon, topographic map, wireframe globe) are `<canvas>` / SVG components. All copy lives in typed content files under `src/content/` so the owner edits data, never JSX.
 
-**Tech Stack:** Vite 6, React 19, TypeScript (strict), React Router 7 (declarative `<BrowserRouter>`), Tailwind CSS v4 (`@theme` tokens), Motion (`motion/react`), Vitest + React Testing Library + jsdom, ESLint (typescript-eslint) + Prettier, Google Fonts (Barlow Condensed, Share Tech Mono, Noto Sans JP), deployed as static files to Vercel.
+**Tech Stack:** Vite 6, React 19, TypeScript (strict), React Router 7 (declarative `<BrowserRouter>`), Tailwind CSS v4 (`@theme` tokens), Motion (`motion/react`), Vitest + React Testing Library + jsdom, ESLint (typescript-eslint) + Prettier, Google Fonts (Barlow Condensed, Share Tech Mono), deployed as static files to Vercel.
 
 **Spec:** This document is the spec. Visual ground truth is `references/` (9 files, catalogued in §Reference Catalogue).
 
@@ -19,7 +19,7 @@
 - **Node ≥ 20**, package manager **pnpm** (lockfile committed).
 - **TypeScript `strict: true`**, no `any`, no `// @ts-ignore`.
 - **Static deployment**: no server, no API routes, no env secrets. Contact = links only (`mailto:jtey20@gmail.com`, GitHub, LinkedIn).
-- **Fonts** only from Google Fonts: `Barlow Condensed` (700/800, display), `Share Tech Mono` (telemetry / body-mono). Every `font-family` has a system fallback. **REVISED by R1 — `Noto Sans JP` is dropped.**
+- **Fonts** only from Google Fonts: `Barlow Condensed` (700/800, display), `Share Tech Mono` (telemetry / body-mono). Every `font-family` has a system fallback.
 - **Color tokens** (defined once in `src/styles/tokens.css`, referenced everywhere via Tailwind utilities or `var(--color-*)`; never hard-code hex in components):
 
   | Token | Hex | Sampled from | Use |

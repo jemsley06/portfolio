@@ -2,8 +2,8 @@
  * EVA-UI base layer — reset, document defaults, phosphor glow utilities.
  * Depends on `tokens.css`, which must be imported first (see `src/main.tsx`).
  * Element defaults live in `@layer base` so any Tailwind utility beats them;
- * the opt-in `.text-glow-*` / `.display-compressed` / `.kanji` classes are
- * unlayered on purpose so they always win over the utility layer.
+ * the opt-in `.text-glow-*` / `.display-compressed` classes are unlayered on
+ * purpose so they always win over the utility layer.
  * ------------------------------------------------------------------------- */
 
 @layer base {
@@ -165,13 +165,4 @@
 .display-compressed {
   transform: scaleX(0.82);
   transform-origin: left;
-}
-
-/* Kanji accents (本部 / 操縦者 / 承認 / 否定 …). `palt` tightens the CJK
-   proportional metrics so the glyphs sit like the show's UI stamps. */
-.kanji {
-  font-family: var(--font-jp);
-  font-weight: 700;
-  font-feature-settings: 'palt' 1;
-  letter-spacing: 0.08em;
 }

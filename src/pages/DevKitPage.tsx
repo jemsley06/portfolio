@@ -13,7 +13,6 @@ import type { ReactNode } from 'react'
 import { BoxedLabel } from '../components/ui/BoxedLabel'
 import { HatchBar } from '../components/ui/HatchBar'
 import { HazardStripe } from '../components/ui/HazardStripe'
-import { Kanji } from '../components/ui/Kanji'
 import { MagiPanel } from '../components/ui/MagiPanel'
 import { MetaBlock } from '../components/ui/MetaBlock'
 import { SevenSegment } from '../components/ui/SevenSegment'
@@ -48,7 +47,7 @@ export default function DevKitPage() {
             title="BALTHASAR"
             index={2}
             shape="pentagon"
-            stamp="承認"
+            stamp="APPROVED"
             className="h-64 w-64"
           />
           <MagiPanel
@@ -62,13 +61,13 @@ export default function DevKitPage() {
             variant="denied"
             title="CASPER"
             index={3}
-            stamp="否定"
+            stamp="DENIED"
             className="h-64 w-64"
           />
           <MagiPanel
             variant="outline"
             title="PENDING"
-            stamp="審議中"
+            stamp="PENDING"
             rotate={-14}
             className="h-48 w-48"
           />
@@ -121,14 +120,6 @@ export default function DevKitPage() {
         </div>
       </Section>
 
-      <Section title="KANJI">
-        <div className="flex flex-wrap items-start gap-8">
-          <Kanji jp="内部" en="INTERNAL" />
-          <Kanji jp="作戦記録" en="OPERATION LOG" tone="acid" />
-          <Kanji jp="危険" en="DANGER" tone="alert" />
-        </div>
-      </Section>
-
       <Section title="SEVEN SEGMENT">
         <div className="flex flex-col gap-6">
           <SevenSegment value="4:59:56" size={72} />
@@ -141,7 +132,7 @@ export default function DevKitPage() {
       <Section title="HAZARD STRIPE / HATCH BAR">
         <div className="flex flex-col gap-6">
           <HazardStripe />
-          <HazardStripe height={40} label="危険" />
+          <HazardStripe height={40} label="DANGER" />
           <div className="flex items-center gap-4">
             <HatchBar className="h-6 w-48" />
             <span className="font-display text-magi text-glow-magi text-3xl">

@@ -26,11 +26,11 @@ describe('HazardStripe', () => {
     expect(tall.style.getPropertyValue('--hazard-pitch')).toBe('36px')
   })
 
-  it('seats an optional kanji label as real, readable text', () => {
-    render(<HazardStripe label="危険" />)
+  it('seats an optional English label as real, readable text (R1 — no kanji)', () => {
+    render(<HazardStripe label="DANGER" />)
 
-    const label = screen.getByText('危険')
-    expect(label).toHaveAttribute('lang', 'ja')
+    const label = screen.getByText('DANGER')
+    expect(label).not.toHaveAttribute('lang')
     expect(label).not.toHaveAttribute('aria-hidden')
   })
 })

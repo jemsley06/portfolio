@@ -18,12 +18,15 @@ describe('MagiPanel', () => {
     rerender(<MagiPanel variant="filled" title="CASPER" />)
     const filled = screen.getByTestId('magi-panel')
     expect(filled).toHaveAttribute('data-variant', 'filled')
-    expect(filled.firstElementChild).toHaveClass('bg-magi', 'text-ink')
+    expect(screen.getByTestId('magi-panel-interior')).toHaveClass(
+      'bg-magi',
+      'text-ink',
+    )
 
     rerender(<MagiPanel variant="denied" title="CASPER" />)
     const denied = screen.getByTestId('magi-panel')
     expect(denied).toHaveClass('bg-alert')
-    expect(denied.firstElementChild).toHaveClass('text-alert')
+    expect(screen.getByTestId('magi-panel-interior')).toHaveClass('text-alert')
   })
 
   it('clips both layers with the same polygon so the rim survives', () => {
@@ -47,12 +50,24 @@ describe('MagiPanel', () => {
     )
   })
 
-  it('glosses the kanji stamp in English for screen readers', () => {
-    render(<MagiPanel variant="denied" title="CASPER" stamp="否定" />)
+  it('renders the stamp as plain English text (R1 — no kanji glyphs)', () => {
+    render(<MagiPanel variant="denied" title="CASPER" stamp="DENIED" />)
 
-    const stamp = screen.getByText('否定')
-    expect(stamp).toHaveAttribute('lang', 'ja')
-    expect(stamp.parentElement).toHaveTextContent('否定 DENIED')
+    const stamp = screen.getByTestId('magi-panel-stamp')
+    expect(stamp).toHaveTextContent('DENIED')
+    expect(stamp).toHaveAttribute('data-stamp', 'DENIED')
+    expect(stamp).not.toHaveAttribute('lang')
+    expect(stamp.querySelector('.sr-only')).toBeNull()
+  })
+
+  it('accepts all three English stamp values', () => {
+    const { rerender } = render(
+      <MagiPanel variant="filled" title="X" stamp="APPROVED" />,
+    )
+    expect(screen.getByTestId('magi-panel-stamp')).toHaveTextContent('APPROVED')
+
+    rerender(<MagiPanel variant="outline" title="X" stamp="PENDING" />)
+    expect(screen.getByTestId('magi-panel-stamp')).toHaveTextContent('PENDING')
   })
 
   it('renders children inside the clipped interior', () => {

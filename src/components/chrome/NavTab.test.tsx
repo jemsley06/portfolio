@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { NavTab } from './NavTab'
@@ -7,21 +7,19 @@ import type { Route } from '../../routes'
 const HOME: Route = {
   path: '/',
   label: 'HOME',
-  kanji: '本部',
   element: <div />,
 }
 
 const PILOT: Route = {
   path: '/pilot',
   label: 'PILOT',
-  kanji: '操縦者',
   element: <div />,
 }
 
-function renderAt(route: Route, initialPath: string) {
+function renderAt(route: Route, initialPath: string, index?: number) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
-      <NavTab route={route} />
+      <NavTab route={route} index={index} />
     </MemoryRouter>,
   )
 }
@@ -53,10 +51,26 @@ describe('NavTab', () => {
     expect(screen.getByRole('link')).not.toHaveAttribute('aria-current')
   })
 
-  it('renders the route kanji and label', () => {
+  it('renders only the English route label — no kanji', () => {
     renderAt(PILOT, '/pilot')
 
-    expect(screen.getByText('操縦者')).toBeInTheDocument()
     expect(screen.getByText('PILOT')).toBeInTheDocument()
+    expect(screen.getByRole('link')).toHaveAccessibleName('PILOT')
+  })
+
+  it('renders a decorative, aria-hidden channel eyebrow from `index`', () => {
+    renderAt(PILOT, '/pilot', 3)
+
+    const chip = screen.getByTestId('boxed-label')
+    const eyebrow = within(chip).getByText('CH.03')
+    expect(eyebrow).toHaveAttribute('aria-hidden', 'true')
+    // The eyebrow is decorative only — it must not leak into the link's name.
+    expect(screen.getByRole('link')).toHaveAccessibleName('PILOT')
+  })
+
+  it('omits the eyebrow entirely when no index is given', () => {
+    renderAt(PILOT, '/pilot')
+
+    expect(screen.queryByText(/^CH\./)).not.toBeInTheDocument()
   })
 })

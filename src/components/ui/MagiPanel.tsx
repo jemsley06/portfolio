@@ -23,8 +23,8 @@ import { cn } from '../../lib/cn'
 
 export type MagiPanelVariant = 'outline' | 'filled' | 'denied'
 export type MagiPanelShape = 'square' | 'pentagon' | 'trapezoid'
-/** 承認 approved · 否定 denied · 審議中 deliberating. */
-export type MagiPanelStamp = '承認' | '否定' | '審議中'
+/** R1 — English stamp glyphs (no kanji): approved · denied · deliberating. */
+export type MagiPanelStamp = 'APPROVED' | 'DENIED' | 'PENDING'
 
 export type MagiPanelProps = {
   variant: MagiPanelVariant
@@ -63,17 +63,9 @@ const INNER_TONE: Record<MagiPanelVariant, string> = {
 }
 
 const STAMP_TONE: Record<MagiPanelStamp, string> = {
-  承認: 'border-magi text-magi text-glow-magi',
-  否定: 'border-alert text-alert text-glow-alert',
-  審議中: 'border-alert text-alert text-glow-alert',
-}
-
-/** What each stamp says, for assistive tech (the kanji alone reads as noise in
- *  an English page context). */
-const STAMP_MEANING: Record<MagiPanelStamp, string> = {
-  承認: 'APPROVED',
-  否定: 'DENIED',
-  審議中: 'DELIBERATING',
+  APPROVED: 'border-magi text-magi text-glow-magi',
+  DENIED: 'border-alert text-alert text-glow-alert',
+  PENDING: 'border-alert text-alert text-glow-alert',
 }
 
 export function MagiPanel({
@@ -114,6 +106,7 @@ export function MagiPanel({
           INNER_TONE[variant],
         )}
         style={{ clipPath }}
+        data-testid="magi-panel-interior"
       >
         <p className="font-display text-2xl leading-none tracking-wide uppercase">
           {title}
@@ -123,13 +116,13 @@ export function MagiPanel({
         {stamp && (
           <p
             className={cn(
-              'kanji border-2 px-3 py-1 text-xl leading-none',
+              'border-2 px-3 py-1 text-xl leading-none uppercase tracking-wide',
               stampTone,
             )}
+            data-testid="magi-panel-stamp"
             data-stamp={stamp}
           >
-            <span lang="ja">{stamp}</span>
-            <span className="sr-only"> {STAMP_MEANING[stamp]}</span>
+            {stamp}
           </p>
         )}
         {children}
