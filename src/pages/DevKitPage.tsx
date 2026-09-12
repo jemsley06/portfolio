@@ -11,6 +11,7 @@
  * ------------------------------------------------------------------------- */
 import type { ReactNode } from 'react'
 import { MagiTriad } from '../components/graphics/MagiTriad'
+import { TopoMap } from '../components/graphics/TopoMap'
 import { BoxedLabel } from '../components/ui/BoxedLabel'
 import { HatchBar } from '../components/ui/HatchBar'
 import { HazardStripe } from '../components/ui/HazardStripe'
@@ -108,6 +109,33 @@ export default function DevKitPage() {
             title="OP-013"
             chamfer="top-right"
             className="h-40 w-full"
+          />
+        </div>
+      </Section>
+
+      <Section title="TOPO MAP — PROFILE-LINE TERRAIN (WEST LAFAYETTE / PURDUE)">
+        <div className="relative h-[26rem] w-full border border-steel">
+          <TopoMap />
+        </div>
+        <div className="flex flex-wrap gap-6">
+          <div className="relative h-64 w-[30rem] border border-steel">
+            <TopoMap
+              view={{ x: 0.22, y: 0.2, width: 0.48, height: 0.46 }}
+              relief={1.3}
+              lines={34}
+              opacity={0.6}
+            />
+          </div>
+          <div className="relative h-64 w-[30rem] border border-steel">
+            <TopoMap source="noise" seed={7} opacity={0.6} />
+          </div>
+        </div>
+        <div className="relative h-40 w-full border border-steel">
+          <TopoMap
+            view={{ x: 0.1, y: 0.35, width: 0.8, height: 0.3 }}
+            relief={1.4}
+            lines={22}
+            registration={false}
           />
         </div>
       </Section>
