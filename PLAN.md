@@ -356,14 +356,14 @@ export type Profile = { name:string; callsign:string; unit:string; title:string;
 
 The kanji reads as costume rather than design. Strip it everywhere; the layouts keep their density and colour hierarchy but carry English only.
 
-- [ ] Delete `src/components/ui/Kanji.tsx` and its test. Remove `Kanji` from `/kit`.
-- [ ] `routes.tsx`: drop `kanji` from the `Route` type and from all four entries. Update `HudHeader` / `NavTab` so a tab is just its English label, and fix their tests. This also closes the open question about orange kanji on the active mint tab — there is no sub-label left to mis-tone.
-- [ ] `MagiPanel`: change `stamp` from `'承認'|'否定'|'審議中'` to `'APPROVED'|'DENIED'|'PENDING'`. Drop the `sr-only` English gloss, which becomes redundant. Keep the stamp box; only the glyphs change.
-- [ ] `HazardStripe`: `label` stays, but callers pass English (`DANGER`, not `危険`). See R5 for its contrast defect.
-- [ ] Remove `--font-jp` from `tokens.css`, the `.kanji` utility from `base.css`, the `Noto Sans JP` link from `index.html`, and the font from the Tech Stack and Fonts lines above. Update `tokens.test.ts`.
-- [ ] `Project.kanji` comes out of `src/content/types.ts`.
-- [ ] Page headers (Tasks 12-15) use an English `StatusBar` title with no kanji pair. `NotFoundPage` is `MagiPanel variant="denied" stamp="DENIED"` with `PATTERN: UNKNOWN / CODE: 404`.
-- [ ] Keep `MAGI`, `NERV`, `MELCHIOR·1` / `BALTHASAR·2` / `CASPER·3` and `EXTENTION`. Those are English-alphabet show flavour and stay.
+- [x] Delete `src/components/ui/Kanji.tsx` and its test. Remove `Kanji` from `/kit`.
+- [x] `routes.tsx`: drop `kanji` from the `Route` type and from all four entries. Update `HudHeader` / `NavTab` so a tab is just its English label, and fix their tests. This also closes the open question about orange kanji on the active mint tab — there is no sub-label left to mis-tone.
+- [x] `MagiPanel`: change `stamp` from `'承認'|'否定'|'審議中'` to `'APPROVED'|'DENIED'|'PENDING'`. Drop the `sr-only` English gloss, which becomes redundant. Keep the stamp box; only the glyphs change.
+- [x] `HazardStripe`: `label` stays, but callers pass English (`DANGER`, not `危険`). See R5 for its contrast defect.
+- [x] Remove `--font-jp` from `tokens.css`, the `.kanji` utility from `base.css`, the `Noto Sans JP` link from `index.html`, and the font from the Tech Stack and Fonts lines above. Update `tokens.test.ts`.
+- [x] `Project.kanji` comes out of `src/content/types.ts`.
+- [ ] **Deferred to Phase 5.** Page headers (Tasks 12-15) use an English `StatusBar` title with no kanji pair. `NotFoundPage` is already done: `MagiPanel variant="denied" stamp="DENIED"` with `PATTERN: UNKNOWN / CODE: 404`.
+- [x] Keep `MAGI`, `NERV`, `MELCHIOR·1` / `BALTHASAR·2` / `CASPER·3` and `EXTENTION`. Those are English-alphabet show flavour and stay.
 
 ### R2: MAGI panels must match the real geometry — *Opus*
 
@@ -382,9 +382,9 @@ The kanji reads as costume rather than design. Strip it everywhere; the layouts 
 
 Task 8 below specifies marching squares at 22 iso-levels. That is the wrong algorithm for what `references/eva-map-ex.png` shows. The reference is a stack of **horizontal profile lines** — each line is one scanline across the heightfield, drawn as `y = baseline - height`, in the manner of a ridgeline plot. Closed contour loops never appear. Nearly all of its character comes from that: lines run edge to edge, bunch where the ground is steep, and spike hard at the peak.
 
-- [ ] Replace the marching-squares approach with profile-line rendering. Draw back to front so nearer ridges occlude farther ones, which is what produces the depth in the reference.
-- [ ] Keep the rest of Task 8's spec: `alert` red splines crossing the field with mono labels at their ends, `bone` `+` registration marks on a grid, static redraw on resize, optional slow drift when `motionOn`.
-- [ ] Use the map far more widely than the current plan does. It should read as the terminal's ground texture: full-bleed behind Home, behind the Projects grid, and as a band on Pilot and Resume. Vary the window and opacity per page rather than repeating one image.
+- [x] Replace the marching-squares approach with profile-line rendering. Draw back to front so nearer ridges occlude farther ones, which is what produces the depth in the reference.
+- [x] Keep the rest of Task 8's spec: `alert` red splines crossing the field with mono labels at their ends, `bone` `+` registration marks on a grid, static redraw on resize, optional slow drift when `motionOn`.
+- [ ] **Deferred to Phase 5**, which builds the pages. Use the map far more widely than the current plan does. It should read as the terminal's ground texture: full-bleed behind Home, behind the Projects grid, and as a band on Pilot and Resume. Vary the window and opacity per page rather than repeating one image.
 
 ### R4: Make the terrain real — West Lafayette / Purdue — *Opus*
 
@@ -393,22 +393,28 @@ The owner asked whether the map can depict Indiana, or West Lafayette and Purdue
 - Statewide Indiana spans about 90 m of relief over 500 km. At that scale profile lines come out nearly flat and parallel, which reads as a test pattern. The state is recognisable by its **outline**, not its terrain, and an outline is a different graphic from this one.
 - A window roughly 15 km across, centred on campus, contains the **Wabash River valley**, which cuts 40 to 60 m below the surrounding till plain. Those valley walls give exactly the bunched, steep line runs the reference lives on, and the river trough is legible as a real landform rather than noise.
 
-- [ ] Bake the heightfield at build time, never at runtime. This is a static deploy with no API, so commit a script under `scripts/` that reads public-domain USGS 3DEP or SRTM elevation for the window, downsamples to about 256×256, and emits a small typed asset. Commit the generated file so the build never needs the network.
-- [ ] Keep `src/lib/noise.ts` and the procedural path as the fallback, chosen by a prop, so `TopoMap` still renders if the asset is missing and so other pages can use invented terrain.
-- [ ] Make the red splines real features instead of random Catmull-Rom: the Wabash River, plus State Road 26 and US-231. Label them from the data, so `R199` becomes `SR-26` and so on. Registration marks can carry real coordinates.
-- [ ] Verify the licence of whatever source you use and record it in a comment. USGS and SRTM elevation are public domain; do not pull in a tile service whose terms forbid redistribution.
-- [ ] If the elevation fetch turns out to be blocked or the data too coarse, say so and fall back to procedural terrain rather than shipping a flat map. Do not silently substitute.
+- [x] Bake the heightfield at build time, never at runtime. This is a static deploy with no API, so commit a script under `scripts/` that reads public-domain USGS 3DEP or SRTM elevation for the window, downsamples to about 256×256, and emits a small typed asset. Commit the generated file so the build never needs the network.
+- [x] Keep `src/lib/noise.ts` and the procedural path as the fallback, chosen by a prop, so `TopoMap` still renders if the asset is missing and so other pages can use invented terrain.
+- [x] Make the red splines real features instead of random Catmull-Rom: the Wabash River, plus State Road 26 and US-231. Label them from the data, so `R199` becomes `SR-26` and so on. Registration marks can carry real coordinates.
+- [x] Verify the licence of whatever source you use and record it in a comment. USGS and SRTM elevation are public domain; do not pull in a tile service whose terms forbid redistribution.
+- [x] If the elevation fetch turns out to be blocked or the data too coarse, say so and fall back to procedural terrain rather than shipping a flat map. Do not silently substitute.
 
 ### R5: Defects found in the first browser pass — *Sonnet*
 
 All four are visible in the Phase 2 screenshots and should be fixed with the work above.
 
-- [ ] `MagiPanel variant="denied"` renders as a solid red block, so the stamp nearly disappears into it. The spec is an `alert` **border** with a red stamp over the normal dark interior.
-- [ ] `HazardStripe`'s label sits in dark red on red stripes at almost the same luminance. Give it a solid `ink` plate behind the text.
-- [ ] `StatusBar` text that wraps to a second line escapes its bracketed frame.
-- [ ] Mobile nav tab labels wrap mid-word and leave the four tabs at unequal heights. R1 removes the kanji that caused it; confirm the tabs then sit on one row at 390 px and set an equal minimum height.
+- [x] `MagiPanel variant="denied"` renders as a solid red block, so the stamp nearly disappears into it. The spec is an `alert` **border** with a red stamp over the normal dark interior.
+- [x] `HazardStripe`'s label sits in dark red on red stripes at almost the same luminance. Give it a solid `ink` plate behind the text.
+- [x] `StatusBar` text that wraps to a second line escapes its bracketed frame.
+- [x] Mobile nav tab labels wrap mid-word and leave the four tabs at unequal heights. R1 removes the kanji that caused it; confirm the tabs then sit on one row at 390 px and set an equal minimum height.
 
 ---
+
+**Status — 2026-09-12.** R1, R2, R4 and R5 are complete and merged. R3's rendering method is complete; only its per-page placement is left, and that lands with the pages in Phase 5. Verified in a headless browser at `/kit`: the map reports the baked elevation field rather than the procedural fallback, and the triad's names fit their slabs.
+
+Two things a browser pass here cannot settle, because this container's egress blocks the Google Fonts stylesheet and every glyph falls back:
+- Typography. Barlow Condensed, Share Tech Mono and Noto-free labels have never rendered in their real faces. Judge type on a local run or a deploy.
+- The MAGI slab names are sized for a generic bold fallback, so they read at 0.14 of slab height rather than the reference's 0.19, which the reference reaches only because its face is condensed. With Barlow loaded they will fill roughly 60-75% of the flat slab width. If that reads small once the real font is in place, the fix is a runtime measure-and-shrink.
 
 ## Phase 3 — Generated Graphics (Opus)
 
