@@ -1,0 +1,45 @@
+/* ---------------------------------------------------------------------------
+ * EVA-UI design tokens — the single source of truth for colour and type.
+ * Never hard-code a hex anywhere else: use Tailwind utilities generated from
+ * these tokens (`bg-ink`, `text-nerv`, `border-magi`, `font-display`, …) or
+ * `var(--color-*)` in stylesheets.
+ *
+ * `static` keeps every custom property in the emitted `:root` block even when
+ * no utility references it yet, so `src/styles/base.css` (and later `crt.css`)
+ * can rely on `var(--color-*)` resolving at runtime.
+ * ------------------------------------------------------------------------- */
+@import 'tailwindcss';
+
+@theme static {
+  /* --- ground ----------------------------------------------------------- */
+  --color-ink: #050403; /* page ground — warm black, never pure #000 */
+  --color-ink-2: #120c07; /* panel interiors */
+
+  /* --- orange phosphor (borders, titles, digits) ------------------------ */
+  --color-nerv: #f7941d;
+  --color-nerv-hot: #ffb042; /* bloom core of orange */
+  --color-amber: #ffc24d; /* secondary labels */
+
+  /* --- green phosphor --------------------------------------------------- */
+  --color-magi: #6cf0b1; /* filled MAGI panels — `ink` text sits on top */
+  --color-acid: #3df58b; /* body text, map contours */
+
+  /* --- red phosphor ----------------------------------------------------- */
+  --color-alert: #ff2a1f; /* warnings, hazard stripes, map splines */
+  --color-alert-deep: #8f0e0e; /* red fills — decorative, never text on ink */
+
+  /* --- sync ribbon ------------------------------------------------------ */
+  --color-plug-blue: #4b6bff;
+  --color-plug-magenta: #d94bff;
+
+  /* --- neutrals --------------------------------------------------------- */
+  --color-bone: #eadfc4; /* cross-hairs, rulers, muted text */
+  --color-steel: #5a5148; /* disabled / hairlines — decorative only */
+
+  /* --- type ------------------------------------------------------------- */
+  --font-display: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
+  --font-mono: 'Share Tech Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --font-jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+
+  --tracking-telemetry: 0.18em;
+}

@@ -19,7 +19,7 @@
 - **Node ≥ 20**, package manager **pnpm** (lockfile committed).
 - **TypeScript `strict: true`**, no `any`, no `// @ts-ignore`.
 - **Static deployment**: no server, no API routes, no env secrets. Contact = links only (`mailto:jtey20@gmail.com`, GitHub, LinkedIn).
-- **Fonts** only from Google Fonts: `Barlow Condensed` (700/800, display), `Share Tech Mono` (telemetry / body-mono), `Noto Sans JP` (700, kanji accents). Every `font-family` has a system fallback.
+- **Fonts** only from Google Fonts: `Barlow Condensed` (700/800, display), `Share Tech Mono` (telemetry / body-mono). Every `font-family` has a system fallback. **REVISED by R1 — `Noto Sans JP` is dropped.**
 - **Color tokens** (defined once in `src/styles/tokens.css`, referenced everywhere via Tailwind utilities or `var(--color-*)`; never hard-code hex in components):
 
   | Token | Hex | Sampled from | Use |
@@ -29,7 +29,7 @@
   | `nerv` | `#F7941D` | eva-magi-1 orange borders | primary orange: borders, titles, digits |
   | `nerv-hot` | `#FFB042` | eva-timer digits | bloom core of orange |
   | `amber` | `#FFC24D` | eva-timer label | secondary labels |
-  | `magi` | `#79E8A5` | eva-magi-1 mint fills | filled MAGI panels (black text on top) |
+  | `magi` | `#6CF0B1` | eva-magi-1 / eva-magi-2 mint fills (re-sampled Task 2) | filled MAGI panels (black text on top) |
   | `acid` | `#3DF58B` | eva-text-color-ex "SHINJI IKARI" | green body text, map contours |
   | `alert` | `#FF2A1F` | eva-text-color-ex "FIRST.C", `_.gif` stripes | red: warnings, hazard stripes, map splines |
   | `alert-deep` | `#8F0E0E` | eva-magi-2 "審議中" box | red fills |
@@ -42,7 +42,7 @@
 - **Accessibility**: all text ≥ 4.5:1 on `ink` (nerv, acid, bone, magi pass; `steel` is decorative only). Focus rings visible (orange 2px). Semantic landmarks (`header`, `nav`, `main`, `footer`). Skip link first in DOM.
 - **Performance budget**: Lighthouse Performance ≥ 90 desktop / ≥ 80 mobile; JS ≤ 250 kB gzip; no layout shift from the CRT overlays (all `position: fixed`, `pointer-events: none`).
 - **No show artwork** is bundled. Kanji and English strings that appear in the show's UI (MAGI, NERV, 提訴 / 決議 / 承認 / 否定 / 審議中, MELCHIOR-1 …) are typed text; graphics are generated.
-- **Naming**: callsign `J. EMSLEY // UNIT-01`. Tabs are labelled in nav as `HOME` `PILOT` `PROJECTS` `RESUME` with kanji sub-labels (`本部` `操縦者` `作戦記録` `人事記録`).
+- **Naming**: callsign `J. EMSLEY // UNIT-01`. Tabs are labelled in nav as `HOME` `PILOT` `PROJECTS` `RESUME`. **REVISED by R1 — the kanji sub-labels are removed.**
 - **Commits**: conventional commits (`feat:`, `chore:`, `test:`…), one commit per task minimum, each ending with the attribution trailer given by the harness.
 
 ---
@@ -190,13 +190,13 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
 
 **Interfaces produced:** Tailwind utilities `bg-ink text-nerv border-magi font-display font-mono font-jp` etc.; CSS vars `--color-*`; utilities `.text-glow-nerv`, `.text-glow-acid`, `.text-glow-alert` (text-shadow stacks); `.display-compressed` (`transform: scaleX(.82)` + `transform-origin:left`).
 
-- [ ] **Step 1:** `tokens.css`:
+- [x] **Step 1:** `tokens.css`:
   ```css
   @import "tailwindcss";
   @theme {
     --color-ink:#050403; --color-ink-2:#120C07;
     --color-nerv:#F7941D; --color-nerv-hot:#FFB042; --color-amber:#FFC24D;
-    --color-magi:#79E8A5; --color-acid:#3DF58B;
+    --color-magi:#6CF0B1; --color-acid:#3DF58B;
     --color-alert:#FF2A1F; --color-alert-deep:#8F0E0E;
     --color-plug-blue:#4B6BFF; --color-plug-magenta:#D94BFF;
     --color-bone:#EADFC4; --color-steel:#5A5148;
@@ -206,13 +206,13 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
     --tracking-telemetry:0.18em;
   }
   ```
-- [ ] **Step 2:** `base.css`: `html{background:var(--color-ink)}`, `body{color:var(--color-acid);font-family:var(--font-mono)}`, `::selection{background:var(--color-nerv);color:var(--color-ink)}`, `:focus-visible{outline:2px solid var(--color-nerv);outline-offset:2px}`, glow utilities:
+- [x] **Step 2:** `base.css`: `html{background:var(--color-ink)}`, `body{color:var(--color-acid);font-family:var(--font-mono)}`, `::selection{background:var(--color-nerv);color:var(--color-ink)}`, `:focus-visible{outline:2px solid var(--color-nerv);outline-offset:2px}`, glow utilities:
   ```css
   .text-glow-nerv{ text-shadow:0 0 2px var(--color-nerv-hot),0 0 8px color-mix(in srgb,var(--color-nerv) 70%,transparent),0 0 20px color-mix(in srgb,var(--color-nerv) 35%,transparent); }
   ```
   (repeat for acid, alert, magi, bone).
-- [ ] **Step 3:** Test: `tokens.test.ts` reads `tokens.css` as text and asserts every token name in the Global Constraints table exists (guards against drift).
-- [ ] **Step 4:** Commit `feat(styles): design tokens, base, glow utilities`.
+- [x] **Step 3:** Test: `tokens.test.ts` reads `tokens.css` as text and asserts every token name in the Global Constraints table exists (guards against drift).
+- [x] **Step 4:** Commit `feat(styles): design tokens, base, glow utilities`.
 
 **Acceptance:** A scratch page rendering the 13 colour swatches + three fonts screenshot-compared side-by-side with `eva-text-color-ex.png` and `eva-magi-1.png`; adjust hex values if the orange reads too yellow or the green too neon (document the final values back in this table).
 
@@ -225,8 +225,8 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
 - `<CrtFrame>{children}</CrtFrame>` — sets `data-fx="on|off"` on `<html>`.
 - SVG filter ids: `#phosphor-bloom`, `#chroma-shift`, `#crt-grain`. CSS classes: `.crt-bloom` (`filter:url(#phosphor-bloom)`), `.crt-chroma`.
 
-- [ ] **Step 1:** `FxProvider`: reads `localStorage['fx']` (default `"on"`), `matchMedia('(prefers-reduced-motion: reduce)')` via `useSyncExternalStore`; exposes context. Test: toggling flips `document.documentElement.dataset.fx`.
-- [ ] **Step 2:** `PhosphorFilters.tsx` — a `0×0` absolutely positioned inline SVG:
+- [x] **Step 1:** `FxProvider`: reads `localStorage['fx']` (default `"on"`), `matchMedia('(prefers-reduced-motion: reduce)')` via `useSyncExternalStore`; exposes context. Test: toggling flips `document.documentElement.dataset.fx`.
+- [x] **Step 2:** `PhosphorFilters.tsx` — a `0×0` absolutely positioned inline SVG:
   ```xml
   <filter id="phosphor-bloom" x="-20%" y="-20%" width="140%" height="140%">
     <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
@@ -240,7 +240,7 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
   </filter>
   <filter id="crt-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
   ```
-- [ ] **Step 3:** `crt.css` layers (all `position:fixed; inset:0; pointer-events:none; z-index:50+`):
+- [x] **Step 3:** `crt.css` layers (all `position:fixed; inset:0; pointer-events:none; z-index:50+`):
   - `.crt-scanlines`: `background:repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px)` + `mix-blend-mode:multiply`.
   - `.crt-aperture`: faint vertical RGB triad `repeating-linear-gradient(90deg, rgba(255,0,0,.04) 0 1px, rgba(0,255,0,.04) 1px 2px, rgba(0,0,255,.04) 2px 3px)`.
   - `.crt-vignette`: `background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%)`.
@@ -250,8 +250,17 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
   - `.crt-bezel`: on the frame wrapper — `border-radius:18px; box-shadow: inset 0 0 80px rgba(0,0,0,.8), inset 0 0 4px rgba(247,148,29,.25); margin:8px` plus `outline: 6px solid #0b0806` — mimics the `eva-magi-2` orange-lipped tube frame.
   - Global soft blur: `.crt-content{ filter: blur(.25px) contrast(1.05) saturate(1.15); }` on the content wrapper (not overlays).
   - All animations + blur are disabled under `html[data-fx="off"]` and `@media (prefers-reduced-motion: reduce)`.
-- [ ] **Step 4:** `ScanlineOverlay` renders the layers; `CrtFrame` = bezel → `.crt-content` children → `ScanlineOverlay` → `PhosphorFilters`. Test: with `data-fx="off"`, no element has class `crt-flicker` animating (assert `getComputedStyle` animation-name is `none` or overlay not rendered).
-- [ ] **Step 5:** Wire into `App.tsx`; commit `feat(fx): CRT frame with scanlines, vignette, grain, bloom filters, FX toggle`.
+- [x] **Step 4:** `ScanlineOverlay` renders the layers; `CrtFrame` = bezel → `.crt-content` children → `ScanlineOverlay` → `PhosphorFilters`. Test: with `data-fx="off"`, no element has class `crt-flicker` animating (assert `getComputedStyle` animation-name is `none` or overlay not rendered).
+- [x] **Step 5:** Wire into `App.tsx`; commit `feat(fx): CRT frame with scanlines, vignette, grain, bloom filters, FX toggle`.
+
+**As built (Task 3) — notes for later phases:**
+
+- `.crt-content` carries a CSS `filter`, which makes it a containing block for `position: fixed` descendants. Task 5's mobile bottom tab bar and Task 10's `BootScreen` must render as siblings of `.crt-content` (alongside the overlays), not inside page content.
+- Grain deviates from the literal CSS above to match `_.gif` and the 3 Hz rule: `screen` blend at `opacity .08` (an `overlay` blend cannot lighten over `ink`), re-seeded `1200ms steps(3)` = 2.5 Hz.
+- `.crt-flicker` is a `bone`-tinted `screen` veil animating opacity `.020 ↔ .055` (a 3.5% brightness swing) rather than animating content opacity, which would promote the page to a compositing layer every frame.
+- `useFx()` outside `FxProvider` does not throw; it falls back to `{ fxOn: true, motionOn: !prefersReducedMotion }` so primitives unit-test without the provider.
+- Overlay layers expose `data-crt-layer="scanlines|aperture|grain|rollbar|flicker|vignette"` as the test contract instead of class names.
+- Safari caveats for Task 17 are recorded in comments in `src/styles/crt.css` (keep the filter host rendered, not `display:none`; widen the bloom filter region if halos clip; `@supports` fallback should target `.crt-bloom` / `.crt-chroma` only).
 
 **Acceptance:** Screenshot of stub Home with a large orange heading using `.text-glow-nerv` + `.crt-bloom` visually matches the stroke-plus-halo look of `Evangelion UI - Magi report.jpeg`. Scanlines are visible at 100% zoom on a 1440p monitor. Chrome DevTools Performance shows ≤ 3% CPU idle on an M-series Mac with overlays on.
 
@@ -259,7 +268,7 @@ Task dependencies: 1 → 2 → 3 → 4 → {5, 6, 7, 8, 9} → 10 → {11, 12, 1
 
 **Files:** Create everything in `src/components/ui/` listed in File Structure, each with a `*.test.tsx`.
 
-**Interfaces produced (exact props):**
+**Interfaces produced (exact props):** **REVISED by R1 and R2 — `Kanji` is deleted, `MagiPanel.stamp` becomes English, and `MagiPanel` gains a chamfered shape.**
 ```ts
 MagiPanel: { variant:'outline'|'filled'|'denied'; title:string; index?:1|2|3; stamp?:'承認'|'否定'|'審議中'; shape?:'square'|'pentagon'|'trapezoid'; rotate?:number; children?:ReactNode }
 MetaBlock: { rows: Array<[label:string, value:string]> }   // renders "CODE : 239" style, mono, nerv
@@ -272,11 +281,21 @@ Typewriter: { text:string; cps?:number; onDone?():void }    // instant when moti
 Kanji: { jp:string; en:string; tone?:'nerv'|'acid'|'alert' }
 ```
 
-- [ ] **Step 1:** For each primitive: write RTL test (renders, variant classes, `Typewriter` finishes instantly with motion off), implement, verify.
-- [ ] **Step 2:** `MagiPanel` shapes via `clip-path: polygon(...)` with an inner pseudo-border trick (outer clipped `nerv` div, inner clipped `ink-2`/`magi` div inset 5 px) so thick orange borders survive clipping. `denied` = `alert` border + red stamp.
-- [ ] **Step 3:** `SevenSegment`: segment map table `{0:'abcdef',1:'bc',…}`, each segment a rounded `<polygon>`; lit segments `nerv-hot` with `.crt-bloom`, unlit `#2a1a08` at 25% so the "ghost segments" from `eva-timer.gif` show.
-- [ ] **Step 4:** Create `src/pages/DevKitPage.tsx` at route `/kit` (dev-only, excluded from nav; removed in Task 17) rendering every primitive in every variant.
-- [ ] **Step 5:** Commit `feat(ui): MAGI primitives (panel, meta block, boxed label, hazard, seven-segment, typewriter)`.
+- [x] **Step 1:** For each primitive: write RTL test (renders, variant classes, `Typewriter` finishes instantly with motion off), implement, verify.
+- [x] **Step 2:** `MagiPanel` shapes via `clip-path: polygon(...)` with an inner pseudo-border trick (outer clipped `nerv` div, inner clipped `ink-2`/`magi` div inset 5 px) so thick orange borders survive clipping. `denied` = `alert` border + red stamp.
+- [x] **Step 3:** `SevenSegment`: segment map table `{0:'abcdef',1:'bc',…}`, each segment a rounded `<polygon>`; lit segments `nerv-hot` with `.crt-bloom`, unlit `#2a1a08` at 25% so the "ghost segments" from `eva-timer.gif` show.
+- [x] **Step 4:** Create `src/pages/DevKitPage.tsx` at route `/kit` (dev-only, excluded from nav; removed in Task 17) rendering every primitive in every variant.
+- [x] **Step 5:** Commit `feat(ui): MAGI primitives (panel, meta block, boxed label, hazard, seven-segment, typewriter)`.
+
+**As built (Task 4) — notes for later phases:**
+
+- Every primitive takes an additive `className?: string`, and `BoxedLabel` takes explicitly typed element attributes (`href`, `target`, `rel`, `download`, `type`, `disabled`, `onClick`, `aria-current`, `aria-pressed`, …) so Tasks 5, 6 and 14 can use it directly. No planned prop was renamed or dropped. `rel="noopener noreferrer"` is supplied automatically with `target="_blank"`.
+- Assert on `data-testid` (`magi-panel`, `boxed-label`, `seven-segment`, …) plus `data-variant` / `data-tone` / `data-shape` / `data-lit`, never on class names. Tone maps must stay literal strings so Tailwind's scanner sees whole class names.
+- `MagiPanel` renders `title` as a `<p>`, not a heading, so grids of panels don't wreck the document outline; pass your own heading in `children`. It has no intrinsic size — give it one via `className`. Rim thickness is the `--magi-panel-border` custom property (default 5px).
+- `SevenSegment` takes `size` as cell height in px and derives width and gap from it; unsupported characters render an all-ghost cell and `' '` a blank one, so a ticking clock never changes width. `.crt-bloom` is already applied to the lit segments only — do not wrap the widget in it.
+- `Typewriter` calls `onDone` synchronously on mount when motion is off; Task 10's boot machine must not assume a delay.
+- Kanji convention: kanji stays in the a11y tree with `lang="ja"`, English gloss follows, and stamps carry an `sr-only` English meaning (承認 APPROVED / 否定 DENIED / 審議中 DELIBERATING).
+- `/kit` lives in `App.tsx` behind `import.meta.env.DEV` and is deliberately absent from `ROUTES`, so `HudHeader` can map `ROUTES` straight into nav tabs. It is tree-shaken out of production; Task 17 deletes the page, its import and the guarded route.
 
 **Acceptance:** `/kit` screenshot compared with `eva-magi-1.png`, `eva-magi-2.png`, `eva-timer.gif`: panel border thickness, mint fill, digit shape and bloom judged "recognisable at a glance".
 
@@ -290,10 +309,18 @@ Kanji: { jp:string; en:string; tone?:'nerv'|'acid'|'alert' }
 
 **Consumes:** `ROUTES` (Task 1), `BoxedLabel`, `Kanji`, `useFx`. **Produces:** `formatTelemetryTime(d:Date):string` → `"T+HH:MM:SS.mmm"`-style `+0:38:50909` look (hours:minutes:seconds+ms, no leading zero on hours).
 
-- [ ] **Step 1:** Layout (desktop): left = `J. EMSLEY` in `font-display` `display-compressed` nerv glow, under it `UNIT-01 // PILOT TERMINAL` mono bone; centre = four `NavTab`s (`BoxedLabel` with `Kanji` sub-label; active tab = filled `magi` bg + ink text like a resolved MAGI panel, inactive = orange outline); right = live clock (`StatusBar`, 100 ms tick, mono) and FX toggle button `FX ON/OFF`.
-- [ ] **Step 2:** Mobile (< 768 px): tabs become a 4-column bottom bar (`position:fixed; bottom:0`); header collapses to callsign + clock.
-- [ ] **Step 3:** Tests: active tab has `aria-current="page"`; clock renders `T+` prefix; `SkipLink` targets `#main`.
-- [ ] **Step 4:** Commit `feat(chrome): HUD header with nav tabs, telemetry clock, FX toggle`.
+- [x] **Step 1:** Layout (desktop): left = `J. EMSLEY` in `font-display` `display-compressed` nerv glow, under it `UNIT-01 // PILOT TERMINAL` mono bone; centre = four `NavTab`s (`BoxedLabel` with `Kanji` sub-label; active tab = filled `magi` bg + ink text like a resolved MAGI panel, inactive = orange outline); right = live clock (`StatusBar`, 100 ms tick, mono) and FX toggle button `FX ON/OFF`.
+- [x] **Step 2:** Mobile (< 768 px): tabs become a 4-column bottom bar (`position:fixed; bottom:0`); header collapses to callsign + clock.
+- [x] **Step 3:** Tests: active tab has `aria-current="page"`; clock renders `T+` prefix; `SkipLink` targets `#main`.
+- [x] **Step 4:** Commit `feat(chrome): HUD header with nav tabs, telemetry clock, FX toggle`.
+
+**As built (Task 5) — notes for later phases:**
+
+- `CrtFrame` gained a `floatingChrome?: ReactNode` slot, rendered as a sibling of `.crt-content` inside `.crt-bezel`, which has no filter and so lets `position: fixed` anchor to the viewport. The mobile tab bar goes through it; Task 10's `BootScreen` should use the same slot.
+- `formatTelemetryTime(d: Date): string` returns `T+H:MM:SSmmm` — hours unpadded, minutes and seconds zero-padded to 2, milliseconds to 3, seconds and milliseconds concatenated with no separator (`T+0:38:50909`). Pure; the caller supplies the `Date`.
+- The clock digits are `aria-hidden` with a static `sr-only` label, so the 10 Hz tick is never announced.
+- Pages from Task 11 onward MUST provide `<main id="main">`; the skip link already targets it and currently has nothing to jump to.
+- Open polish question for review: the active (mint-filled) nav tab keeps a `nerv`-orange kanji sub-label, because `Kanji` only accepts `nerv|acid|alert`. Extending that union is the fix if it reads wrong on screen.
 
 ### Task 6: `HudFooter` + content types + links — *Sonnet*
 
@@ -308,9 +335,78 @@ export type ResumeEntry = { org:string; role:string; start:string /* YYYY-MM */;
 export type Resume = { experience:ResumeEntry[]; education:ResumeEntry[]; skills:Skill[]; certifications?:string[]; pdf:string };
 export type Profile = { name:string; callsign:string; unit:string; title:string; oneLiner:string; bio:string[]; photo?:string; skills:Skill[]; location:string; status:'AVAILABLE'|'ENGAGED' };
 ```
-- [ ] **Step 1:** `links.ts` with `mailto:jtey20@gmail.com`, `https://github.com/jemsley06`, `https://www.linkedin.com/in/jason-emsley` (mark in a comment: **OWNER TO CONFIRM**).
-- [ ] **Step 2:** Footer: `HazardStripe` top, `MetaBlock` rows `[['CODE','01'],['FILE','PORTFOLIO_SYS'],['EXTENTION','2026'],['EX_MODE','ON'],['PRIORITY','AAA']]`, three `BoxedLabel as="a"` links, right-aligned `NERV`-style wordmark in `magi` with `HatchBar`.
-- [ ] **Step 3:** Test: three links with correct hrefs and `rel="noopener"`. Commit `feat(chrome): footer with contact links and MAGI metadata`.
+- [x] **Step 1:** `links.ts` with `mailto:jtey20@gmail.com`, `https://github.com/jemsley06`, `https://www.linkedin.com/in/jason-emsley` (mark in a comment: **OWNER TO CONFIRM**).
+- [x] **Step 2:** Footer: `HazardStripe` top, `MetaBlock` rows `[['CODE','01'],['FILE','PORTFOLIO_SYS'],['EXTENTION','2026'],['EX_MODE','ON'],['PRIORITY','AAA']]`, three `BoxedLabel as="a"` links, right-aligned `NERV`-style wordmark in `magi` with `HatchBar`.
+- [x] **Step 3:** Test: three links with correct hrefs and `rel="noopener"`. Commit `feat(chrome): footer with contact links and MAGI metadata`.
+
+---
+
+**As built (Task 6) — notes for later phases:**
+
+- The content types are verbatim from the Produces block above and carry no React import, so pages may import them freely.
+- `links.ts` exports `LINKS: Link[]`. The GitHub and LinkedIn URLs are marked `// OWNER TO CONFIRM`.
+- `mailto:` opens in place; the two external links use `target="_blank"`, and `BoxedLabel` supplies `rel="noopener noreferrer"` for them automatically — assert that behaviour rather than setting `rel` at the call site.
+- The footer reserves `pb-20 md:pb-6` so its last row clears the fixed mobile tab bar, which renders outside `.crt-content` and can otherwise occlude it.
+
+## Pending Revisions — TODO before Phase 3
+
+> Raised by the owner on 2026-09-12 after reviewing the first browser screenshots of the Phase 1 + 2 build. **These supersede the task text below wherever the two disagree.** Work them before Task 7 starts, since Tasks 8 and 9 are written against the old descriptions.
+
+### R1: Remove all kanji — *Sonnet*
+
+The kanji reads as costume rather than design. Strip it everywhere; the layouts keep their density and colour hierarchy but carry English only.
+
+- [ ] Delete `src/components/ui/Kanji.tsx` and its test. Remove `Kanji` from `/kit`.
+- [ ] `routes.tsx`: drop `kanji` from the `Route` type and from all four entries. Update `HudHeader` / `NavTab` so a tab is just its English label, and fix their tests. This also closes the open question about orange kanji on the active mint tab — there is no sub-label left to mis-tone.
+- [ ] `MagiPanel`: change `stamp` from `'承認'|'否定'|'審議中'` to `'APPROVED'|'DENIED'|'PENDING'`. Drop the `sr-only` English gloss, which becomes redundant. Keep the stamp box; only the glyphs change.
+- [ ] `HazardStripe`: `label` stays, but callers pass English (`DANGER`, not `危険`). See R5 for its contrast defect.
+- [ ] Remove `--font-jp` from `tokens.css`, the `.kanji` utility from `base.css`, the `Noto Sans JP` link from `index.html`, and the font from the Tech Stack and Fonts lines above. Update `tokens.test.ts`.
+- [ ] `Project.kanji` comes out of `src/content/types.ts`.
+- [ ] Page headers (Tasks 12-15) use an English `StatusBar` title with no kanji pair. `NotFoundPage` is `MagiPanel variant="denied" stamp="DENIED"` with `PATTERN: UNKNOWN / CODE: 404`.
+- [ ] Keep `MAGI`, `NERV`, `MELCHIOR·1` / `BALTHASAR·2` / `CASPER·3` and `EXTENTION`. Those are English-alphabet show flavour and stay.
+
+### R2: MAGI panels must match the real geometry — *Opus*
+
+`references/eva-magi-1.png` does not show small pentagons in a grid. Re-read it before implementing. What it actually shows:
+
+- Three **large mint slabs** filling most of the frame, each with its inner corners **chamfered at 45°** where it faces the centre, so the three cut edges together outline a **central black hexagonal void**.
+- That void is the hub, carrying `MAGI` in orange on black — the only orange-on-black text in the composition.
+- **Three short, thick orange connector bars** bridge the gap from each slab's chamfered edge to the hub.
+- Panel names are large, black, letter-spaced, and sit inside the slab: `BALTHASAR·2` upper right, `CASPER·3` left, `MELCHIOR·1` lower right. The whole plate is rotated a few degrees.
+
+- [ ] Rewrite the Task 9 `MagiTriad` spec around that description: three chamfered slabs around a hexagonal hub, not "pentagon pointing down" in a 12-column grid.
+- [ ] Give `MagiPanel` the chamfer as a real shape (`clip-path` with the corner cut facing a `corner` prop), so a slab can be composed into the triad and still used alone as a project card.
+- [ ] Hold the triad's proportions from the reference: the slabs dominate, the hub is small, the black gutters between slabs are narrow and even.
+
+### R3: Topographic maps are profile lines, not iso-contours — *Opus*
+
+Task 8 below specifies marching squares at 22 iso-levels. That is the wrong algorithm for what `references/eva-map-ex.png` shows. The reference is a stack of **horizontal profile lines** — each line is one scanline across the heightfield, drawn as `y = baseline - height`, in the manner of a ridgeline plot. Closed contour loops never appear. Nearly all of its character comes from that: lines run edge to edge, bunch where the ground is steep, and spike hard at the peak.
+
+- [ ] Replace the marching-squares approach with profile-line rendering. Draw back to front so nearer ridges occlude farther ones, which is what produces the depth in the reference.
+- [ ] Keep the rest of Task 8's spec: `alert` red splines crossing the field with mono labels at their ends, `bone` `+` registration marks on a grid, static redraw on resize, optional slow drift when `motionOn`.
+- [ ] Use the map far more widely than the current plan does. It should read as the terminal's ground texture: full-bleed behind Home, behind the Projects grid, and as a band on Pilot and Resume. Vary the window and opacity per page rather than repeating one image.
+
+### R4: Make the terrain real — West Lafayette / Purdue — *Opus*
+
+The owner asked whether the map can depict Indiana, or West Lafayette and Purdue specifically. **West Lafayette is both more feasible and the better picture; build that.** Reasoning, so the executor does not relitigate it:
+
+- Statewide Indiana spans about 90 m of relief over 500 km. At that scale profile lines come out nearly flat and parallel, which reads as a test pattern. The state is recognisable by its **outline**, not its terrain, and an outline is a different graphic from this one.
+- A window roughly 15 km across, centred on campus, contains the **Wabash River valley**, which cuts 40 to 60 m below the surrounding till plain. Those valley walls give exactly the bunched, steep line runs the reference lives on, and the river trough is legible as a real landform rather than noise.
+
+- [ ] Bake the heightfield at build time, never at runtime. This is a static deploy with no API, so commit a script under `scripts/` that reads public-domain USGS 3DEP or SRTM elevation for the window, downsamples to about 256×256, and emits a small typed asset. Commit the generated file so the build never needs the network.
+- [ ] Keep `src/lib/noise.ts` and the procedural path as the fallback, chosen by a prop, so `TopoMap` still renders if the asset is missing and so other pages can use invented terrain.
+- [ ] Make the red splines real features instead of random Catmull-Rom: the Wabash River, plus State Road 26 and US-231. Label them from the data, so `R199` becomes `SR-26` and so on. Registration marks can carry real coordinates.
+- [ ] Verify the licence of whatever source you use and record it in a comment. USGS and SRTM elevation are public domain; do not pull in a tile service whose terms forbid redistribution.
+- [ ] If the elevation fetch turns out to be blocked or the data too coarse, say so and fall back to procedural terrain rather than shipping a flat map. Do not silently substitute.
+
+### R5: Defects found in the first browser pass — *Sonnet*
+
+All four are visible in the Phase 2 screenshots and should be fixed with the work above.
+
+- [ ] `MagiPanel variant="denied"` renders as a solid red block, so the stamp nearly disappears into it. The spec is an `alert` **border** with a red stamp over the normal dark interior.
+- [ ] `HazardStripe`'s label sits in dark red on red stripes at almost the same luminance. Give it a solid `ink` plate behind the text.
+- [ ] `StatusBar` text that wraps to a second line escapes its bracketed frame.
+- [ ] Mobile nav tab labels wrap mid-word and leave the four tabs at unequal heights. R1 removes the kanji that caused it; confirm the tabs then sit on one row at 390 px and set an equal minimum height.
 
 ---
 
@@ -340,6 +436,8 @@ Algorithm (matches `pilot-sync-1/2.gif`):
 
 **Files:** `src/lib/noise.ts` (+ test: deterministic for a seed, range [0,1]), `src/components/graphics/TopoMap.tsx`.
 
+**REVISED by R3 and R4 — render profile lines rather than iso-contours, and source real West Lafayette terrain.**
+
 **Produces:** `<TopoMap seed?:number; peaks?:Array<{x:number;y:number;h:number}>; density?:number; className? />` — absolutely positioned decorative background (`aria-hidden`).
 
 - Heightfield = 3-octave value noise + Gaussian peaks (one sharp peak by default at 50 %,45 %, like `eva-map-ex.png`).
@@ -354,7 +452,7 @@ Algorithm (matches `pilot-sync-1/2.gif`):
 **Files:** `src/components/graphics/WireGlobe.tsx`, `MagiTriad.tsx` (+ tests).
 
 - `WireGlobe`: 12 meridians + 7 parallels projected orthographically, rotates around a tilted axis (`motionOn` → 30 s/rev via `requestAnimationFrame` updating a `rotation` state at 15 fps max), stroke `nerv`, `.crt-bloom`. Props `{ size?:number; tone?:'nerv'|'alert' }`.
-- `MagiTriad`: the three-panel composition from `eva-magi-1.png`: BALTHASAR·2 top (pentagon pointing down), CASPER·3 bottom-left, MELCHIOR·1 bottom-right, connecting "MAGI" hub with three orange link bars; each panel accepts `{ name, index, state:'pending'|'approved'|'denied' }` so pages can animate deliberation (Home shows all three flipping to 承認 in sequence). Built from `MagiPanel`s positioned in a CSS grid, not raw SVG, so text stays DOM.
+- `MagiTriad`: **REVISED by R2 — read `eva-magi-1.png` again and build chamfered slabs around a hexagonal hub.** The three-panel composition from `eva-magi-1.png`: BALTHASAR·2 top (pentagon pointing down), CASPER·3 bottom-left, MELCHIOR·1 bottom-right, connecting "MAGI" hub with three orange link bars; each panel accepts `{ name, index, state:'pending'|'approved'|'denied' }` so pages can animate deliberation (Home shows all three flipping to 承認 in sequence). Built from `MagiPanel`s positioned in a CSS grid, not raw SVG, so text stays DOM.
 - [ ] Tests; `/kit`; commit `feat(graphics): WireGlobe and MagiTriad`.
 
 ---
@@ -384,7 +482,7 @@ Rules: `skip()` on Enter / Space / Esc / click → jumps to `done`. If `motionOn
 
 ## Phase 5 — Pages (Sonnet)
 
-Every page: `<main id="main">`, a `StatusBar` page header (`Kanji` + English title + `MetaBlock` with `CODE`/`FILE`/`PRIORITY` values unique to the page), dense multi-column grid at ≥ 1024 px, single column below 768 px. Page transitions: `motion` fade+2 px slide, 200 ms, gated.
+Every page: `<main id="main">`, a `StatusBar` page header (**REVISED by R1 — English title only, no kanji pair**) (English title + `MetaBlock` with `CODE`/`FILE`/`PRIORITY` values unique to the page), dense multi-column grid at ≥ 1024 px, single column below 768 px. Page transitions: `motion` fade+2 px slide, 200 ms, gated.
 
 ### Task 11: Content files — *Sonnet*
 

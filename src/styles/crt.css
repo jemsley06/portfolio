@@ -1,0 +1,306 @@
+/* ---------------------------------------------------------------------------
+ * EVA-UI CRT layer — everything that makes the terminal look like a tube.
+ * Imported after `base.css` (see `src/main.tsx`); depends on its tokens.
+ *
+ * Structure (markup lives in `src/fx/`):
+ *   .crt-bezel      frame wrapper — the orange-lipped tube of `eva-magi-2.png`
+ *   .crt-content    page DOM + the global soft blur (NOT the overlays)
+ *   .crt-*          fixed overlays: scanlines, aperture, grain, rollbar,
+ *                   flicker, vignette — `inset: 0; pointer-events: none`,
+ *                   z-index 50+, so they can never shift or block layout
+ *   .crt-bloom      opt-in phosphor halo — `filter: url(#phosphor-bloom)`
+ *   .crt-chroma     opt-in convergence error — `filter: url(#chroma-shift)`
+ *
+ * Deliberately UNLAYERED (like the `.text-glow-*` utilities in `base.css`) so
+ * the `html[data-fx='off']` overrides at the bottom out-specify them.
+ *
+ * Motion budget (PLAN § Global Constraints): nothing changes state faster than
+ * 3 Hz and the flicker swings ≤ 4% opacity.
+ *   grain   3 steps / 1200ms = 2.5 Hz
+ *   flicker keyframes ≥ 8% of 6s = 480ms apart → ≤ 2.1 Hz, range 0.020–0.055
+ *   rollbar continuous 9s traverse — motion, never a flash
+ * ------------------------------------------------------------------------- */
+
+/* --- the tube ------------------------------------------------------------ */
+
+.crt-bezel {
+  position: relative;
+  min-height: calc(100dvh - 16px);
+  margin: 8px;
+  border-radius: 18px;
+  /* Darker than `ink` so the tube reads as a physical lip around the screen. */
+  outline: 6px solid
+    color-mix(in srgb, var(--color-ink-2) 55%, var(--color-ink));
+  box-shadow:
+    inset 0 0 80px rgba(0, 0, 0, 0.8),
+    inset 0 0 4px color-mix(in srgb, var(--color-nerv) 25%, transparent);
+}
+
+/* Global softening: phosphor is never perfectly sharp, and the slight contrast
+   and saturation lift is what pushes the orange toward `eva-timer.gif`.
+   NOTE for later tasks: a `filter` makes this element the containing block for
+   `position: fixed` descendants — keep fixed chrome (mobile tab bar, boot
+   overlay) outside `.crt-content`, next to the overlays. */
+.crt-content {
+  position: relative;
+  z-index: 0;
+  filter: blur(0.25px) contrast(1.05) saturate(1.15);
+}
+
+/* --- fixed overlay stack ------------------------------------------------- */
+
+.crt-scanlines,
+.crt-aperture,
+.crt-grain,
+.crt-rollbar,
+.crt-flicker,
+.crt-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Horizontal raster lines — 1px dark line every 3px, multiplied into the page
+   so bright phosphor keeps its colour and the ground stays warm black. */
+.crt-scanlines {
+  z-index: 50;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.28) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* Aperture grille — vertical RGB triad, screened so it only ever lifts. */
+.crt-aperture {
+  z-index: 51;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.04) 0 1px,
+    rgba(0, 255, 0, 0.04) 1px 2px,
+    rgba(0, 0, 255, 0.04) 2px 3px
+  );
+  mix-blend-mode: screen;
+}
+
+/* Film grain, intensity sampled from `_.gif` (σ ≈ 11/255 on the dark ground).
+   `screen` rather than `overlay`: over `ink` (#050403) an overlay blend can
+   only darken, so the grain would be invisible exactly where the reference
+   shows it most. Oversized by 3px so the re-seed translate never uncovers an
+   edge. */
+.crt-grain {
+  z-index: 52;
+  inset: -3px;
+  opacity: 0.08;
+  mix-blend-mode: screen;
+  will-change: transform;
+  animation: crt-grain-shift 1200ms steps(3) infinite;
+}
+
+.crt-grain-field {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes crt-grain-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  33.333% {
+    transform: translate3d(-2px, 1px, 0);
+  }
+  66.666% {
+    transform: translate3d(1px, -2px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Slow vertical roll bar — a 120px brighter band drifting down the tube. */
+.crt-rollbar {
+  z-index: 53;
+  bottom: auto;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--color-bone) 16%, transparent) 45%,
+    color-mix(in srgb, var(--color-bone) 5%, transparent) 72%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  will-change: transform;
+  animation: crt-roll 9s linear infinite;
+}
+
+@keyframes crt-roll {
+  from {
+    transform: translate3d(0, -140px, 0);
+  }
+  to {
+    transform: translate3d(0, 100dvh, 0);
+  }
+}
+
+/* Mains flicker — a warm veil breathing between 2.0% and 5.5% opacity, i.e. a
+   3.5% brightness swing (budget: ≤ 4%). */
+.crt-flicker {
+  --crt-flicker-min: 0.02;
+  --crt-flicker-max: 0.055;
+
+  z-index: 54;
+  background: var(--color-bone);
+  mix-blend-mode: screen;
+  opacity: var(--crt-flicker-min);
+  animation: crt-flicker 6s ease-in-out infinite;
+}
+
+@keyframes crt-flicker {
+  0%,
+  100% {
+    opacity: var(--crt-flicker-min);
+  }
+  9% {
+    opacity: var(--crt-flicker-max);
+  }
+  17% {
+    opacity: var(--crt-flicker-min);
+  }
+  31% {
+    opacity: 0.034;
+  }
+  40% {
+    opacity: var(--crt-flicker-min);
+  }
+  55% {
+    opacity: var(--crt-flicker-max);
+  }
+  63% {
+    opacity: 0.028;
+  }
+  78% {
+    opacity: var(--crt-flicker-min);
+  }
+  92% {
+    opacity: 0.042;
+  }
+}
+
+/* Tube falloff — the corners of a curved screen never get the same beam. */
+.crt-vignette {
+  z-index: 55;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* --- filter bank + opt-in filters ---------------------------------------- */
+
+/* The 0x0 host for <PhosphorFilters/>. Never `display: none`: a hidden subtree
+   invalidates the `url(#id)` references in some engines. */
+.crt-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The signature halo — pair with `.text-glow-*` for the `Magi report` look. */
+.crt-bloom {
+  filter: url(#phosphor-bloom);
+}
+
+.crt-chroma {
+  filter: url(#chroma-shift);
+}
+
+/* --- FX OFF: a clean, flat terminal -------------------------------------- */
+
+html[data-fx='off'] .crt-bezel {
+  margin: 0;
+  border-radius: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+html[data-fx='off'] .crt-content {
+  filter: none;
+}
+
+html[data-fx='off'] .crt-scanlines,
+html[data-fx='off'] .crt-aperture,
+html[data-fx='off'] .crt-grain,
+html[data-fx='off'] .crt-rollbar,
+html[data-fx='off'] .crt-flicker,
+html[data-fx='off'] .crt-vignette {
+  display: none;
+}
+
+html[data-fx='off'] .crt-bloom,
+html[data-fx='off'] .crt-chroma {
+  filter: none;
+}
+
+/* Glow collapses to a single hairline layer (PLAN Task 17 manual check).
+   Specificity 0,2,1 beats the unlayered `.text-glow-*` rules in `base.css`. */
+html[data-fx='off'] .text-glow-nerv,
+html[data-fx='off'] .text-glow-acid,
+html[data-fx='off'] .text-glow-alert,
+html[data-fx='off'] .text-glow-magi,
+html[data-fx='off'] .text-glow-bone {
+  text-shadow: 0 0 1px var(--glow-core);
+}
+
+/* --- reduced motion ------------------------------------------------------ */
+
+/* `base.css` already clamps every duration; the CRT layer goes further and
+   stops the moving layers outright (and drops the two that exist only to
+   move). `ScanlineOverlay` mirrors this in markup via `motionOn`. */
+@media (prefers-reduced-motion: reduce) {
+  .crt-content {
+    filter: none;
+  }
+
+  .crt-grain {
+    animation: none;
+  }
+
+  .crt-rollbar,
+  .crt-flicker {
+    display: none;
+    animation: none;
+  }
+}
+
+/* --- print --------------------------------------------------------------- */
+
+@media print {
+  .crt-scanlines,
+  .crt-aperture,
+  .crt-grain,
+  .crt-rollbar,
+  .crt-flicker,
+  .crt-vignette {
+    display: none;
+  }
+
+  .crt-bezel {
+    margin: 0;
+    border-radius: 0;
+    outline: 0;
+    box-shadow: none;
+    min-height: 0;
+  }
+
+  .crt-content,
+  .crt-bloom,
+  .crt-chroma {
+    filter: none;
+  }
+}
